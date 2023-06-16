@@ -7,7 +7,17 @@ document.addEventListener("DOMContentLoaded", function() {
     solveSudoku(puzzle);
     // Remove numbers
     let count = 0;
-    while (count < 70) {
+    let targetCount = 60;
+
+    if (document.getElementById("easy-btn").classList.contains("active")) {
+      targetCount = 35;
+    } else if (document.getElementById("medium-btn").classList.contains("active")) {
+      targetCount = 45;
+    } else if (document.getElementById("hard-btn").classList.contains("active")) {
+      targetCount = 50;
+    }
+
+    while (count < targetCount) {
       const row = Math.floor(Math.random() * 9);
       const col = Math.floor(Math.random() * 9);
       if (puzzle[row][col] !== 0) {
@@ -23,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return false;
       }
     }
-  
+
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
     for (let i = startRow; i < startRow + 3; i++) {
@@ -70,10 +80,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function generate() {
     generateSudoku();
-  
+
     const box = document.querySelector('.box');
     box.innerHTML = '';
-  
+
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         const cell = document.createElement('div');
@@ -99,12 +109,12 @@ document.addEventListener("DOMContentLoaded", function() {
     button.addEventListener('click', function(event) {
       const clickedButton = event.target;
       const selectedCell = document.querySelector('.selected');
-  
+
       if (selectedCell && !selectedCell.hasAttribute('data-locked')) {
         const selectedValue = clickedButton.textContent;
         const row = parseInt(selectedCell.dataset.row);
         const col = parseInt(selectedCell.dataset.col);
-  
+
         // Update the cell first
         selectedCell.textContent = selectedValue;
         if (selectedValue !== '') {
@@ -112,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
           selectedCell.classList.remove('filled');
         }
-  
+
         // Then perform the checks
         if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
           selectedCell.style.color = '#e55c6c'; // Invalid move
@@ -120,11 +130,11 @@ document.addEventListener("DOMContentLoaded", function() {
           // Copy the current puzzle state
           const tempPuzzle = JSON.parse(JSON.stringify(puzzle));
           tempPuzzle[row][col] = parseInt(selectedValue);
-  
+
           // Check if all cells are filled
           if (isFilled(tempPuzzle)) {
             selectedCell.style.color = ''; // Reset to default color
-            
+
             const box = document.querySelector('.box');
             box.dataset.filled = true;
           } else if (!solveSudoku(tempPuzzle)) {
@@ -138,13 +148,23 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
   });
-  
-  
 
+  // Event listener for difficulty buttons
+  const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+  difficultyButtons.forEach((button) => {
+    button.addEventListener('click', function(event) {
+      // Remove the 'active' class from all difficulty buttons
+      difficultyButtons.forEach((btn) => {
+        btn.classList.remove('active');
+      });
 
+      // Add the 'active' class to the clicked difficulty button
+      button.classList.add('active');
 
-
-
+      // Generate a new game
+      generate();
+    });
+  });
 
   // Event listener for clear button
   const clearButton = document.querySelector('.clear-btn');
@@ -156,14 +176,11 @@ document.addEventListener("DOMContentLoaded", function() {
       selectedCell.classList.remove('filled');
     }
   });
-
+  // Event listener for solve button
   const solveButton = document.querySelector('.solve-btn');
   solveButton.addEventListener('click', function() {
-    // action to perform when the button is clicked
-    // for instance, solve the current puzzle and update the board
     const solved = solveSudoku(puzzle);
 
-    // If the puzzle is solved successfully, update the board
     if (solved) {
       const box = document.querySelector('.box');
       box.innerHTML = '';

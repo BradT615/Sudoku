@@ -29,13 +29,46 @@ body {
 
 .container-xxl {
     display: flex;
+    flex-direction: row;
     justify-content: center;
+    align-items: flex-start;
+  }
+  
+  .difficulty {
+    display: flex;
+    width: 100%;
     align-items: center;
-    /* height: 90vh; */
-}
+    margin-left: 70px;
+    margin-bottom: 10px;
+  }
+
+  .difficulty h1 {
+    font-size: 1.5rem;
+    margin: auto 0;
+  }
+  
+  .difficulty-btns {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+  }
+
+  .difficulty-btn {
+    margin: 0 5px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    border-bottom: 3px solid transparent;
+  }
+
+  .difficulty-btn:hover,
+  .difficulty-btn.active {
+    border-bottom: 3px solid var(--dark-blue-text-color);
+  }
 
 .box {
-    margin: 40px 40px;
+    margin: 0 40px;
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
