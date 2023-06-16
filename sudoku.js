@@ -4,11 +4,16 @@ document.addEventListener("DOMContentLoaded", function() {
   // Sudoku puzzle generation function
   function generateSudoku() {
     puzzle = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+  
+    const nums = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    for (let i = 0; i < 9; i++) {
+      puzzle[i][i] = nums[i];
+    }
+  
     solveSudoku(puzzle);
-    // Remove numbers
+    
     let count = 0;
     let targetCount = 60;
-
     if (document.getElementById("easy-btn").classList.contains("active")) {
       targetCount = 35;
     } else if (document.getElementById("medium-btn").classList.contains("active")) {
@@ -16,16 +21,26 @@ document.addEventListener("DOMContentLoaded", function() {
     } else if (document.getElementById("hard-btn").classList.contains("active")) {
       targetCount = 50;
     }
-
     while (count < targetCount) {
       const row = Math.floor(Math.random() * 9);
       const col = Math.floor(Math.random() * 9);
+      
       if (puzzle[row][col] !== 0) {
         puzzle[row][col] = 0;
         count++;
       }
     }
   }
+  // Fisher-Yates algorithm
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+
 
   function isValid(num, row, col) {
     for (let i = 0; i < 9; i++) {
@@ -33,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
         return false;
       }
     }
-
     const startRow = Math.floor(row / 3) * 3;
     const startCol = Math.floor(col / 3) * 3;
     for (let i = startRow; i < startRow + 3; i++) {
@@ -46,6 +60,8 @@ document.addEventListener("DOMContentLoaded", function() {
     return true;
   }
 
+
+
   function isFilled(grid) {
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -57,7 +73,8 @@ document.addEventListener("DOMContentLoaded", function() {
     return true;
   }
 
-  // Generate a fully solved puzzle
+
+
   function solveSudoku(puzzle) {
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -77,6 +94,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     return true;
   }
+
+
 
   function generate() {
     generateSudoku();
@@ -100,9 +119,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     addBorders();
   }
-
+  
   generate();
 
+
+  
   // Event listener for numpad button clicks
   const numButtons = document.querySelectorAll('.num-btn');
   numButtons.forEach((button) => {
@@ -115,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const row = parseInt(selectedCell.dataset.row);
         const col = parseInt(selectedCell.dataset.col);
 
-        // Update the cell first
         selectedCell.textContent = selectedValue;
         if (selectedValue !== '') {
           selectedCell.classList.add('filled');
@@ -133,16 +153,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
           // Check if all cells are filled
           if (isFilled(tempPuzzle)) {
-            selectedCell.style.color = ''; // Reset to default color
+            selectedCell.style.color = '';
 
             const box = document.querySelector('.box');
             box.dataset.filled = true;
           } else if (!solveSudoku(tempPuzzle)) {
-            selectedCell.style.color = '#e55c6c'; // Unsolvable move
+            selectedCell.style.color = '#e55c6c';
           } else {
-            // If the move is valid and the puzzle is solvable, update the actual puzzle
             puzzle[row][col] = parseInt(selectedValue);
-            selectedCell.style.color = ''; // Reset to default color
+            selectedCell.style.color = '';
           }
         }
       }
@@ -153,15 +172,11 @@ document.addEventListener("DOMContentLoaded", function() {
   const difficultyButtons = document.querySelectorAll('.difficulty-btn');
   difficultyButtons.forEach((button) => {
     button.addEventListener('click', function(event) {
-      // Remove the 'active' class from all difficulty buttons
       difficultyButtons.forEach((btn) => {
         btn.classList.remove('active');
       });
 
-      // Add the 'active' class to the clicked difficulty button
       button.classList.add('active');
-
-      // Generate a new game
       generate();
     });
   });
@@ -176,6 +191,7 @@ document.addEventListener("DOMContentLoaded", function() {
       selectedCell.classList.remove('filled');
     }
   });
+
   // Event listener for solve button
   const solveButton = document.querySelector('.solve-btn');
   solveButton.addEventListener('click', function() {
@@ -204,12 +220,12 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Event listener for new game button
-  const newGameButton = document.querySelector('.new-game-btn');
-  newGameButton.addEventListener('click', function() {
-    const box = document.querySelector('.box');
-    box.removeAttribute('data-filled');
-    generate();
-  });
+  // const newGameButton = document.querySelector('.new-game-btn');
+  // newGameButton.addEventListener('click', function() {
+  //   const box = document.querySelector('.box');
+  //   box.removeAttribute('data-filled');
+  //   generate();
+  // });
 
   // Event listener for cell selection
   const box = document.querySelector('.box');
@@ -253,11 +269,9 @@ document.addEventListener("DOMContentLoaded", function() {
       if (boardCell.textContent === selectedValue && selectedValue !== '') {
         boardCell.classList.add('same-value');
       }
-
       if (row === parseInt(cell.dataset.row) || col === parseInt(cell.dataset.col)) {
         boardCell.classList.add('selected-related');
       }
-
       if (
         Math.floor(row / 3) === Math.floor(parseInt(cell.dataset.row) / 3) &&
         Math.floor(col / 3) === Math.floor(parseInt(cell.dataset.col) / 3)
@@ -265,11 +279,5 @@ document.addEventListener("DOMContentLoaded", function() {
         boardCell.classList.add('selected-related');
       }
     });
-  }
-
-  // Function to check if the puzzle is solvable
-  function isSolvable() {
-    const puzzleCopy = JSON.parse(JSON.stringify(puzzle));
-    return solveSudoku(puzzleCopy);
   }
 });
