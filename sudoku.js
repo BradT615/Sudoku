@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
   let puzzle;
 
-  // Sudoku puzzle generation function
   function generateSudoku() {
     puzzle = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
   
@@ -42,6 +41,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+
+
   function isValid(num, row, col) {
     for (let i = 0; i < 9; i++) {
       if (puzzle[row][i] === num || puzzle[i][col] === num) {
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+
   function isFilled(grid) {
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -72,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     return true;
   }
+
 
 
 
@@ -143,30 +146,25 @@ document.addEventListener("DOMContentLoaded", function() {
           selectedCell.classList.remove('filled');
         }
 
-        // Then perform the checks
+        // Then perform the checks for the selected cell only
         if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
           selectedCell.style.color = '#e55c6c'; // Invalid move
         } else {
+          selectedCell.style.color = '#0072e3';
           // Copy the current puzzle state
           const tempPuzzle = JSON.parse(JSON.stringify(puzzle));
           tempPuzzle[row][col] = parseInt(selectedValue);
 
           // Check if all cells are filled
-          if (isFilled(tempPuzzle)) {
-            selectedCell.style.color = '';
-
+          if (isFilled(tempPuzzle) && solveSudoku(tempPuzzle)) {
             const box = document.querySelector('.box');
             box.dataset.filled = true;
-          } else if (!solveSudoku(tempPuzzle)) {
-            selectedCell.style.color = '#e55c6c';
-          } else {
-            puzzle[row][col] = parseInt(selectedValue);
-            selectedCell.style.color = '';
           }
         }
       }
     });
   });
+
 
   // Event listener for difficulty buttons
   const difficultyButtons = document.querySelectorAll('.difficulty-btn');
@@ -216,16 +214,17 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
       addBorders();
+      box.dataset.filled = true;
     }
   });
 
   // Event listener for new game button
-  // const newGameButton = document.querySelector('.new-game-btn');
-  // newGameButton.addEventListener('click', function() {
-  //   const box = document.querySelector('.box');
-  //   box.removeAttribute('data-filled');
-  //   generate();
-  // });
+  const newGameButton = document.querySelector('.new-game-btn');
+  newGameButton.addEventListener('click', function() {
+    const box = document.querySelector('.box');
+    box.removeAttribute('data-filled');
+    generate();
+  });
 
   // Event listener for cell selection
   const box = document.querySelector('.box');
