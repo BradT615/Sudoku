@@ -26,38 +26,49 @@
       
 
     <div id="main" class="container-xxl">
+      <div class="difficulty">
+        <h1>Difficulty:</h1>
+        <div class="difficulty-btns">
+          <button id="easy-btn" class="difficulty-btn">Easy</button>
+          <button id="medium-btn" class="difficulty-btn">Medium</button>
+          <button id="hard-btn" class="difficulty-btn">Hard</button>
+          <button id="expert-btn" class="difficulty-btn">Expert</button>
+        </div>
+      </div>
       <div class="top-section">
-        <div class="difficulty">
-          <h1>Difficulty:</h1>
-          <div class="difficulty-btns">
-            <button id="easy-btn" class="difficulty-btn">Easy</button>
-            <button id="medium-btn" class="difficulty-btn">Medium</button>
-            <button id="hard-btn" class="difficulty-btn">Hard</button>
-            <button id="expert-btn" class="difficulty-btn">Expert</button>
-          </div>
-        </div>
         <div class="box"></div>
+        <div id="numpad" class="numpad">
+          <div class="numpad-row">
+            <button class="num-btn">1</button>
+            <button class="num-btn">2</button>
+            <button class="num-btn">3</button>
+          </div>
+          <div class="numpad-row">
+            <button class="num-btn">4</button>
+            <button class="num-btn">5</button>
+            <button class="num-btn">6</button>
+          </div>
+          <div class="numpad-row">
+            <button class="num-btn">7</button>
+            <button class="num-btn">8</button>
+            <button class="num-btn">9</button>
+          </div>
+          <button class="clear-btn">Clear Cell</button>
+          <button class="solve-btn">Solve</button>
+          <button class="new-game-btn">New Game</button>
+        </div>
       </div>
-      <div id="numpad" class="numpad">
-        <div class="numpad-row">
-          <button class="num-btn">1</button>
-          <button class="num-btn">2</button>
-          <button class="num-btn">3</button>
-        </div>
-        <div class="numpad-row">
-          <button class="num-btn">4</button>
-          <button class="num-btn">5</button>
-          <button class="num-btn">6</button>
-        </div>
-        <div class="numpad-row">
-          <button class="num-btn">7</button>
-          <button class="num-btn">8</button>
-          <button class="num-btn">9</button>
-        </div>
-        <button class="clear-btn">Clear Cell</button>
-        <button class="solve-btn">Solve</button>
-        <button class="new-game-btn">New Game</button>
-      </div>
+      
+    </div>
+    <div class="instructions-container">
+      <h1>Instructions</h1>
+      <ul>
+        <li>Digits from 1 to 9: Sudoku is played with the numbers 1 to 9.</li>
+        <li>No repetition in rows: Each row of the grid must contain each of the digits from 1 to 9 exactly once.</li>
+        <li>No repetition in columns: Each column of the grid must contain each of the digits from 1 to 9 exactly once.</li>
+        <li>No repetition in boxes: Each of the 3x3 boxes must contain each of the digits from 1 to 9 exactly once.</li>
+        <li>Pre-filled squares: Some squares will be filled in to start the game; these numbers cannot be changed.</li>
+      </ul>
     </div>
       
 

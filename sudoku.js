@@ -280,3 +280,126 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 });
+
+
+
+
+
+function generateSudoku() {
+  // Initialize empty 9x9 grid
+  puzzle = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+  
+  // First fill the diagonal 3x3 boxes
+  for (let i = 0; i < 9; i += 3) {
+      fillBox(i, i);
+  }
+
+  // Then fill the remaining boxes
+  fillRemaining(0, 3);
+  
+  // Remove digits based on difficulty
+  let count = 0;
+  let targetCount = 60;
+  if (document.getElementById("easy-btn").classList.contains("active")) {
+    targetCount = 35;
+  } else if (document.getElementById("medium-btn").classList.contains("active")) {
+    targetCount = 45;
+  } else if (document.getElementById("hard-btn").classList.contains("active")) {
+    targetCount = 50;
+  }
+  while (count < targetCount) {
+    const row = Math.floor(Math.random() * 9);
+    const col = Math.floor(Math.random() * 9);
+    
+    if (puzzle[row][col] !== 0) {
+      puzzle[row][col] = 0;
+      count++;
+    }
+  }
+}
+
+// Fill 3x3 box
+function fillBox(row, col) {
+  const nums = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+          puzzle[row + i][col + j] = nums[i * 3 + j];
+      }
+  }
+}
+
+// Fill remaining cells
+function fillRemaining(i, j) {
+  if (j >= 9 && i < 8) {
+      i += 1;
+      j = 0;
+  }
+  if (i >= 9 && j >= 9) {
+      return true;
+  }
+  if (i < 3) {
+      if (j < 3) {
+          j = 3;
+      }
+  } else if (i < 9 - 3) {
+      if (j === Math.floor(i / 3) * 3) {
+          j += 3;
+      }
+  } else {
+      if (j === 9 - 3) {
+          i += 1;
+          j = 0;
+          if (i >= 9) {
+              return true;
+          }
+      }
+  }
+
+  for (let num = 1; num <= 9; num++) {
+      if (checkIfSafe(i, j, num)) {
+          puzzle[i][j] = num;
+          if (fillRemaining(i, j + 1)) {
+              return true;
+          }
+          puzzle[i][j] = 0;
+      }
+  }
+  return false;
+}
+
+// Check if it's safe to put in cell
+function checkIfSafe(i, j, num) {
+  return !isInRow(i, num) && !isInCol(j, num) && !isInBox(i - i % 3, j - j % 3, num);
+}
+
+// Check if number is in row
+function isInRow(i, num) {
+  for (let j = 0; j < 9; j++) {
+      if (puzzle[i][j] === num) {
+          return true;
+      }
+  }
+  return false;
+}
+
+// Check if number is in column
+function isInCol(j, num) {
+  for (let i = 0; i < 9; i++) {
+      if (puzzle[i][j] === num) {
+          return true;
+      }
+  }
+  return false;
+}
+
+// Check if number is in box
+function isInBox(startRow, startCol, num) {
+  for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+          if (puzzle[i + startRow][j + startCol] === num) {
+              return true;
+          }
+      }
+  }
+  return false;
+}
