@@ -149,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Then perform the checks for the selected cell only
         if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
           selectedCell.style.color = '#e55c6c'; // Invalid move
+          increaseMistakes();
         } else {
           selectedCell.style.color = '#0072e3';
           // Copy the current puzzle state
@@ -176,6 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       button.classList.add('active');
       generate();
+      resetGame();
     });
   });
 
@@ -224,6 +226,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const box = document.querySelector('.box');
     box.removeAttribute('data-filled');
     generate();
+    resetGame();
   });
 
   // Event listener for cell selection
@@ -282,124 +285,59 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-
-
-
-function generateSudoku() {
-  // Initialize empty 9x9 grid
-  puzzle = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
-  
-  // First fill the diagonal 3x3 boxes
-  for (let i = 0; i < 9; i += 3) {
-      fillBox(i, i);
-  }
-
-  // Then fill the remaining boxes
-  fillRemaining(0, 3);
-  
-  // Remove digits based on difficulty
-  let count = 0;
-  let targetCount = 60;
-  if (document.getElementById("easy-btn").classList.contains("active")) {
-    targetCount = 35;
-  } else if (document.getElementById("medium-btn").classList.contains("active")) {
-    targetCount = 45;
-  } else if (document.getElementById("hard-btn").classList.contains("active")) {
-    targetCount = 50;
-  }
-  while (count < targetCount) {
-    const row = Math.floor(Math.random() * 9);
-    const col = Math.floor(Math.random() * 9);
-    
-    if (puzzle[row][col] !== 0) {
-      puzzle[row][col] = 0;
-      count++;
+let timerInterval;
+let time = 0;
+let isPaused = false;
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(!isPaused) {
+      time++;
+      document.getElementById('timer').innerHTML = formatTime(time);
     }
-  }
+  }, 1000);
 }
-
-// Fill 3x3 box
-function fillBox(row, col) {
-  const nums = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-  for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-          puzzle[row + i][col + j] = nums[i * 3 + j];
-      }
-  }
-}
-
-// Fill remaining cells
-function fillRemaining(i, j) {
-  if (j >= 9 && i < 8) {
-      i += 1;
-      j = 0;
-  }
-  if (i >= 9 && j >= 9) {
-      return true;
-  }
-  if (i < 3) {
-      if (j < 3) {
-          j = 3;
-      }
-  } else if (i < 9 - 3) {
-      if (j === Math.floor(i / 3) * 3) {
-          j += 3;
-      }
+function pauseTimer() {
+  isPaused = !isPaused;
+  if (isPaused) {
+    document.getElementById('pause-btn').innerHTML = "Resume";
   } else {
-      if (j === 9 - 3) {
-          i += 1;
-          j = 0;
-          if (i >= 9) {
-              return true;
-          }
-      }
+    document.getElementById('pause-btn').innerHTML = "Pause";
   }
-
-  for (let num = 1; num <= 9; num++) {
-      if (checkIfSafe(i, j, num)) {
-          puzzle[i][j] = num;
-          if (fillRemaining(i, j + 1)) {
-              return true;
-          }
-          puzzle[i][j] = 0;
-      }
-  }
-  return false;
 }
-
-// Check if it's safe to put in cell
-function checkIfSafe(i, j, num) {
-  return !isInRow(i, num) && !isInCol(j, num) && !isInBox(i - i % 3, j - j % 3, num);
+function resetTimer() {
+  clearInterval(timerInterval);
+  time = 0;
+  document.getElementById('timer').innerHTML = formatTime(time);
 }
-
-// Check if number is in row
-function isInRow(i, num) {
-  for (let j = 0; j < 9; j++) {
-      if (puzzle[i][j] === num) {
-          return true;
-      }
-  }
-  return false;
+function formatTime(seconds) {
+  let minutes = Math.floor(seconds / 60);
+  seconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
+document.getElementById('pause-btn').addEventListener('click', pauseTimer);
 
-// Check if number is in column
-function isInCol(j, num) {
-  for (let i = 0; i < 9; i++) {
-      if (puzzle[i][j] === num) {
-          return true;
-      }
+
+
+let mistakes = 0;
+function increaseMistakes() {
+  mistakes++;
+  document.getElementById('mistakes').innerHTML = mistakes;
+  if (mistakes >= 3) {
+    endGame();
   }
-  return false;
 }
-
-// Check if number is in box
-function isInBox(startRow, startCol, num) {
-  for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-          if (puzzle[i + startRow][j + startCol] === num) {
-              return true;
-          }
-      }
-  }
-  return false;
+function resetMistakes() {
+  mistakes = 0;
+  document.getElementById('mistakes').innerHTML = mistakes;
+}
+function endGame() {
+  stopTimer();
+  alert("Game Over! You have made 3 mistakes.");
+  resetGame();
+}
+function resetGame() {
+  resetMistakes();
+  resetTimer();
+  startTimer()
+  // additional game state reset
 }
