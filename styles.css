@@ -72,6 +72,7 @@ body {
   padding-left: 10px;
   gap: 60px;
   margin: 0 auto;
+  padding-bottom: 10px;
 }
 .mistakes {
   margin-top: 10px;
@@ -85,8 +86,14 @@ body {
 }
 .timer button {
   background: none;
-  border: 3px solid var(--dark-blue-text-color);
+  border: 2px solid var(--dark-blue-text-color);
   border-radius: 20%;
+}
+.timer button:hover {
+  background-color: var(--dark-blue-text-color);
+}
+.timer img {
+  filter: invert();
 }
 
 /* * {
@@ -121,8 +128,8 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--new-num);
+  font-size: 2rem;
 }
-
 .cell.invalid {
   color: var(--red-text);
 }
@@ -133,6 +140,7 @@ body {
 .cell.selected-related:not(.selected-main):not(.selected) {
   background-color: var(--visible-cells);
 }
+
 
 
 .numpad {
@@ -149,19 +157,27 @@ body {
   column-gap: 10px;
 }
 .num-btn {
+  color: var(--text-color);
   font-size: 3rem;
   width: 100%;
-  border: 6px solid var(--dark-blue-text-color);
+  border: 2px solid var(--dark-blue-text-color);
+  background: none;
   border-radius: 10px;
 }
-.clear-btn,
-.solve-btn,
-.new-game-btn {
+.num-btn:hover {
+  background-color: var(--dark-blue-text-color);
+}
+.btns button {
+  color: var(--text-color);
   font-size: 3rem;
   width: 100%;
   margin: 10px auto;
-  border: 6px solid var(--dark-blue-text-color);
+  border: 2px solid var(--dark-blue-text-color);
+  background: none;
   border-radius: 10px;
+}
+.btns button:hover {
+  background-color: var(--dark-blue-text-color);
 }
 
 
@@ -172,6 +188,7 @@ body {
 .cell[data-locked="true"] {
   color: var(--dark-blue-text-color);
 }
+
 
 
 .instructions-container {

@@ -166,6 +166,56 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
+  // Event listener for keyboard numpad entries
+document.addEventListener('keydown', function(event) {
+  const selectedCell = document.querySelector('.selected');
+
+  if (selectedCell && !selectedCell.hasAttribute('data-locked')) {
+    const key = event.key;
+
+    if (key >= '0' && key <= '9') {
+      event.preventDefault();
+      
+      const selectedValue = key;
+      const row = parseInt(selectedCell.dataset.row);
+      const col = parseInt(selectedCell.dataset.col);
+
+      selectedCell.textContent = selectedValue;
+      if (selectedValue !== '') {
+        selectedCell.classList.add('filled');
+      } else {
+        selectedCell.classList.remove('filled');
+      }
+
+      if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
+        selectedCell.style.color = '#e55c6c'; // Invalid move
+        increaseMistakes();
+      } else {
+        selectedCell.style.color = '#0072e3';
+        // Copy the current puzzle state
+        const tempPuzzle = JSON.parse(JSON.stringify(puzzle));
+        tempPuzzle[row][col] = parseInt(selectedValue);
+
+        // Check if all cells are filled
+        if (isFilled(tempPuzzle) && solveSudoku(tempPuzzle)) {
+          const box = document.querySelector('.box');
+          box.dataset.filled = true;
+        }
+      }
+    }
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
 
   // Event listener for difficulty buttons
   const difficultyButtons = document.querySelectorAll('.difficulty-btn');
@@ -285,11 +335,14 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
+
+
+
+
 let timerInterval;
 let time = 0;
 let isPaused = false;
 const playPauseIcon = document.getElementById('play-pause-icon');
-
 function startTimer() {
   playPauseIcon.src = 'logos/pause.png';
   timerInterval = setInterval(function() {
@@ -299,7 +352,6 @@ function startTimer() {
     }
   }, 1000);
 }
-
 function pauseTimer() {
   isPaused = !isPaused;
   if (isPaused) {
@@ -308,20 +360,17 @@ function pauseTimer() {
     playPauseIcon.src = 'logos/pause.png';
   }
 }
-
 function resetTimer() {
   clearInterval(timerInterval);
   time = 0;
   document.getElementById('timer').innerHTML = formatTime(time);
   playPauseIcon.src = 'logos/play.png';
 }
-
 function formatTime(seconds) {
   let minutes = Math.floor(seconds / 60);
   seconds = seconds % 60;
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
-
 document.getElementById('pause-btn').addEventListener('click', pauseTimer);
 
 
