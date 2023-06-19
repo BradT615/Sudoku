@@ -288,7 +288,10 @@ document.addEventListener("DOMContentLoaded", function() {
 let timerInterval;
 let time = 0;
 let isPaused = false;
+const playPauseIcon = document.getElementById('play-pause-icon');
+
 function startTimer() {
+  playPauseIcon.src = 'logos/pause.png';
   timerInterval = setInterval(function() {
     if(!isPaused) {
       time++;
@@ -296,25 +299,35 @@ function startTimer() {
     }
   }, 1000);
 }
+
 function pauseTimer() {
   isPaused = !isPaused;
   if (isPaused) {
-    document.getElementById('pause-btn').innerHTML = "Resume";
+    playPauseIcon.src = 'logos/play.png';
   } else {
-    document.getElementById('pause-btn').innerHTML = "Pause";
+    playPauseIcon.src = 'logos/pause.png';
   }
 }
+
 function resetTimer() {
   clearInterval(timerInterval);
   time = 0;
   document.getElementById('timer').innerHTML = formatTime(time);
+  playPauseIcon.src = 'logos/play.png';
 }
+
 function formatTime(seconds) {
   let minutes = Math.floor(seconds / 60);
   seconds = seconds % 60;
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
+
 document.getElementById('pause-btn').addEventListener('click', pauseTimer);
+
+
+
+
+
 
 
 
