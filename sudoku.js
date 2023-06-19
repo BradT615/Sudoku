@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     solveSudoku(puzzle);
-
     let count = 0;
     let targetCount = 60;
     const easyBtn = document.getElementById("easy-btn");
@@ -72,9 +71,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
 
-
-
-
   function isValid(num, row, col) {
     for (let i = 0; i < 9; i++) {
       if (puzzle[row][i] === num || puzzle[i][col] === num) {
@@ -94,8 +90,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
 
-
-
   function isFilled(grid) {
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -106,8 +100,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     return true;
   }
-
-
 
 
   function solveSudoku(puzzle) {
@@ -129,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     return true;
   }
-
 
 
   function generate() {
@@ -154,11 +145,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     addBorders();
   }
-  
+
   generate();
 
 
-  
   // Event listener for numpad button clicks
   const numButtons = document.querySelectorAll('.num-btn');
   numButtons.forEach((button) => {
@@ -178,7 +168,45 @@ document.addEventListener("DOMContentLoaded", function() {
           selectedCell.classList.remove('filled');
         }
 
-        // Then perform the checks for the selected cell only
+        if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
+          selectedCell.style.color = '#e55c6c'; // Invalid move
+          increaseMistakes();
+        } else {
+          selectedCell.style.color = '#0072e3';
+          const tempPuzzle = JSON.parse(JSON.stringify(puzzle));
+          tempPuzzle[row][col] = parseInt(selectedValue);
+
+          if (isFilled(tempPuzzle) && solveSudoku(tempPuzzle)) {
+            const box = document.querySelector('.box');
+            box.dataset.filled = true;
+          }
+        }
+      }
+    });
+  });
+
+
+  // Event listener for keyboard numpad entries
+  document.addEventListener('keydown', function(event) {
+    const selectedCell = document.querySelector('.selected');
+
+    if (selectedCell && !selectedCell.hasAttribute('data-locked')) {
+      const key = event.key;
+
+      if (key >= '0' && key <= '9') {
+        event.preventDefault();
+        
+        const selectedValue = key;
+        const row = parseInt(selectedCell.dataset.row);
+        const col = parseInt(selectedCell.dataset.col);
+
+        selectedCell.textContent = selectedValue;
+        if (selectedValue !== '') {
+          selectedCell.classList.add('filled');
+        } else {
+          selectedCell.classList.remove('filled');
+        }
+
         if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
           selectedCell.style.color = '#e55c6c'; // Invalid move
           increaseMistakes();
@@ -195,58 +223,8 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
       }
-    });
-  });
-
-  // Event listener for keyboard numpad entries
-document.addEventListener('keydown', function(event) {
-  const selectedCell = document.querySelector('.selected');
-
-  if (selectedCell && !selectedCell.hasAttribute('data-locked')) {
-    const key = event.key;
-
-    if (key >= '0' && key <= '9') {
-      event.preventDefault();
-      
-      const selectedValue = key;
-      const row = parseInt(selectedCell.dataset.row);
-      const col = parseInt(selectedCell.dataset.col);
-
-      selectedCell.textContent = selectedValue;
-      if (selectedValue !== '') {
-        selectedCell.classList.add('filled');
-      } else {
-        selectedCell.classList.remove('filled');
-      }
-
-      if (selectedValue !== '' && !isValid(parseInt(selectedValue), row, col)) {
-        selectedCell.style.color = '#e55c6c'; // Invalid move
-        increaseMistakes();
-      } else {
-        selectedCell.style.color = '#0072e3';
-        // Copy the current puzzle state
-        const tempPuzzle = JSON.parse(JSON.stringify(puzzle));
-        tempPuzzle[row][col] = parseInt(selectedValue);
-
-        // Check if all cells are filled
-        if (isFilled(tempPuzzle) && solveSudoku(tempPuzzle)) {
-          const box = document.querySelector('.box');
-          box.dataset.filled = true;
-        }
-      }
     }
-  }
-});
-
-
-
-
-
-
-
-
-
-
+  });
 
 
   // Event listener for difficulty buttons
@@ -263,6 +241,7 @@ document.addEventListener('keydown', function(event) {
     });
   });
 
+
   // Event listener for clear button
   const clearButton = document.querySelector('.clear-btn');
   clearButton.addEventListener('click', function() {
@@ -273,6 +252,7 @@ document.addEventListener('keydown', function(event) {
       selectedCell.classList.remove('filled');
     }
   });
+
 
   // Event listener for solve button
   const solveButton = document.querySelector('.solve-btn');
@@ -302,6 +282,7 @@ document.addEventListener('keydown', function(event) {
     }
   });
 
+
   // Event listener for new game button
   const newGameButton = document.querySelector('.new-game-btn');
   newGameButton.addEventListener('click', function() {
@@ -311,6 +292,7 @@ document.addEventListener('keydown', function(event) {
     resetGame();
   });
 
+
   // Event listener for cell selection
   const box = document.querySelector('.box');
   box.addEventListener('click', function(event) {
@@ -319,6 +301,7 @@ document.addEventListener('keydown', function(event) {
       selectCell(clickedCell);
     }
   });
+
 
   // Add border
   function addBorders() {
@@ -332,6 +315,7 @@ document.addEventListener('keydown', function(event) {
       }
     }
   }
+
 
   // Function to highlight related cells
   function selectCell(cell) {
@@ -364,74 +348,70 @@ document.addEventListener('keydown', function(event) {
       }
     });
   }
-});
 
 
-
-
-
-
-let timerInterval;
-let time = 0;
-let isPaused = false;
-const playPauseIcon = document.getElementById('play-pause-icon');
-function startTimer() {
-  playPauseIcon.src = 'logos/pause.png';
-  timerInterval = setInterval(function() {
-    if(!isPaused) {
-      time++;
-      document.getElementById('timer').innerHTML = formatTime(time);
-    }
-  }, 1000);
-}
-function pauseTimer() {
-  isPaused = !isPaused;
-  if (isPaused) {
-    playPauseIcon.src = 'logos/play.png';
-  } else {
+  let time = 0;
+  let isPaused = false;
+  let timerInterval;
+  let mistakes = 0;
+  const playPauseIcon = document.getElementById('play-pause-icon');
+  function startTimer() {
     playPauseIcon.src = 'logos/pause.png';
+    timerInterval = setInterval(function() {
+      if(!isPaused) {
+        time++;
+        document.getElementById('timer').innerHTML = formatTime(time);
+      }
+    }, 1000);
   }
-}
-function resetTimer() {
-  clearInterval(timerInterval);
-  time = 0;
-  document.getElementById('timer').innerHTML = formatTime(time);
-  playPauseIcon.src = 'logos/play.png';
-}
-function formatTime(seconds) {
-  let minutes = Math.floor(seconds / 60);
-  seconds = seconds % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-document.getElementById('pause-btn').addEventListener('click', pauseTimer);
-
-
-
-
-
-
-
-
-let mistakes = 0;
-function increaseMistakes() {
-  mistakes++;
-  document.getElementById('mistakes').innerHTML = mistakes;
-  if (mistakes >= 3) {
-    endGame();
+  function pauseTimer() {
+    isPaused = !isPaused;
+    if (isPaused) {
+      playPauseIcon.src = 'logos/play.png';
+    } else {
+      playPauseIcon.src = 'logos/pause.png';
+    }
   }
-}
-function resetMistakes() {
-  mistakes = 0;
-  document.getElementById('mistakes').innerHTML = mistakes;
-}
-function endGame() {
-  stopTimer();
-  alert("Game Over! You have made 3 mistakes.");
-  resetGame();
-}
-function resetGame() {
-  resetMistakes();
-  resetTimer();
-  startTimer()
-  // additional game state reset
-}
+  function stopTimer() {
+    clearInterval(timerInterval);
+    isPaused = true;
+    playPauseIcon.src = 'logos/play.png';
+  }
+  function resetTimer() {
+    clearInterval(timerInterval);
+    time = 0;
+    isPaused = false;
+    document.getElementById('timer').innerHTML = formatTime(time);
+    playPauseIcon.src = 'logos/play.png';
+  }
+  function formatTime(seconds) {
+    let minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  
+  document.getElementById('pause-btn').addEventListener('click', pauseTimer);
+  function increaseMistakes() {
+    mistakes++;
+    document.getElementById('mistakes').innerHTML = mistakes;
+    if (mistakes >= 3) {
+      setTimeout(endGame, 0);
+    }
+  }
+  function resetMistakes() {
+    mistakes = 0;
+    document.getElementById('mistakes').innerHTML = mistakes;
+  }
+  function endGame() {
+    stopTimer();
+    alert("Game Over! You have made 3 mistakes.");
+    resetGame();
+  }
+  function resetGame() {
+    resetMistakes();
+    resetTimer();
+    startTimer();
+    // additional game state reset
+  }
+  startTimer();
+});
