@@ -3,27 +3,39 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function generateSudoku() {
     puzzle = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
-  
+
     const nums = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
     for (let i = 0; i < 9; i++) {
       puzzle[i][i] = nums[i];
     }
-  
+
     solveSudoku(puzzle);
-    
+
     let count = 0;
     let targetCount = 60;
-    if (document.getElementById("easy-btn").classList.contains("active")) {
+    const easyBtn = document.getElementById("easy-btn");
+    const mediumBtn = document.getElementById("medium-btn");
+    const hardBtn = document.getElementById("hard-btn");
+    const expertBtn = document.getElementById("expert-btn");
+
+    if (easyBtn.classList.contains("active")) {
       targetCount = 35;
-    } else if (document.getElementById("medium-btn").classList.contains("active")) {
+    } else if (mediumBtn.classList.contains("active")) {
       targetCount = 45;
-    } else if (document.getElementById("hard-btn").classList.contains("active")) {
+    } else if (hardBtn.classList.contains("active")) {
       targetCount = 50;
+    } else if (expertBtn.classList.contains("active")) {
+      targetCount = 60;
+    } else {
+      easyBtn.classList.add('active');
+      targetCount = 35;
     }
+
+    setActiveDifficultyButton(targetCount);
     while (count < targetCount) {
       const row = Math.floor(Math.random() * 9);
       const col = Math.floor(Math.random() * 9);
-      
+
       if (puzzle[row][col] !== 0) {
         puzzle[row][col] = 0;
         count++;
@@ -32,11 +44,31 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   // Fisher-Yates algorithm
   function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+  }
+  function setActiveDifficultyButton(targetCount) {
+    const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+    difficultyButtons.forEach((button) => {
+      button.classList.remove('active');
+    });
+
+    let activeDifficultyButtonId;
+    if (targetCount <= 35) {
+      activeDifficultyButtonId = "easy-btn";
+    } else if (targetCount <= 45) {
+      activeDifficultyButtonId = "medium-btn";
+    } else if (targetCount <= 50) {
+      activeDifficultyButtonId = "hard-btn";
+    } else {
+      activeDifficultyButtonId = "expert-btn";
     }
-    return array;
+
+    const activeDifficultyButton = document.getElementById(activeDifficultyButtonId);
+    activeDifficultyButton.classList.add('active');
   }
 
 
