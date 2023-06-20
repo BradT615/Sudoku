@@ -350,6 +350,9 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
 
+
+
+
   let time = 0;
   let isPaused = false;
   let timerInterval;
@@ -364,12 +367,41 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }, 1000);
   }
+  let cellValues = [];
+  let selectedCellStore = null;
+
   function pauseTimer() {
     isPaused = !isPaused;
     if (isPaused) {
       playPauseIcon.src = 'logos/play.png';
+  
+      // Save currently selected cell
+      selectedCellStore = document.querySelector('.selected-main');
+  
+      // Hide all the numbers in the grid and store the original values
+      const cells = document.querySelectorAll('.cell');
+      cellValues = [];
+      cells.forEach((cell) => {
+        cellValues.push(cell.textContent);
+        cell.textContent = '';
+      });
+      // Remove highlighting from cells
+      const selectedCells = document.querySelectorAll('.selected, .selected-main, .selected-related, .same-value');
+      selectedCells.forEach((selectedCell) => {
+        selectedCell.classList.remove('selected', 'selected-main', 'selected-related', 'same-value');
+      });
     } else {
       playPauseIcon.src = 'logos/pause.png';
+
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach((cell, index) => {
+        cell.textContent = cellValues[index];
+      });
+  
+      if (selectedCellStore) {
+        selectCell(selectedCellStore);
+        selectedCellStore = null;
+      }
     }
   }
   function stopTimer() {
@@ -389,7 +421,9 @@ document.addEventListener("DOMContentLoaded", function() {
     seconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
-  
+
+
+
   document.getElementById('pause-btn').addEventListener('click', pauseTimer);
   function increaseMistakes() {
     mistakes++;

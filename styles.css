@@ -96,10 +96,6 @@ body {
   filter: invert();
 }
 
-/* * {
-  border: 1px solid red;
-} */
-
 
 
 
@@ -122,6 +118,17 @@ body {
   background-color: white;
   border: 6px solid var(--dark-blue-text-color);
 }
+#unpauseButton {
+  border: none;
+}
+
+
+* {
+  border: 1px solid red;
+}
+
+
+
 .cell {
   border: 1px solid var(--dark-blue-text-color);
   display: flex;
