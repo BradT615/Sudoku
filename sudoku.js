@@ -302,6 +302,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
+  
+
 
   // Add border
   function addBorders() {
@@ -445,6 +447,7 @@ document.addEventListener("DOMContentLoaded", function() {
     resetMistakes();
     resetTimer();
     startTimer();
+    generate();
     // additional game state reset
   }
   startTimer();
