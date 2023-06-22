@@ -144,6 +144,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
     addBorders();
+    box.removeAttribute('data-filled');
   }
 
   generate();
@@ -310,10 +311,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const cells = document.querySelectorAll('.cell');
     for (let i = 0; i < 9; i++) {
       for (let j of [2, 5]) {
-        cells[i * 9 + j].style.borderRight = '6px solid #344861';
+        cells[i * 9 + j].style.borderRight = '3px solid #344861';
       }
       for (let j of [2, 5]) {
-        cells[j * 9 + i].style.borderBottom = '6px solid #344861';
+        cells[j * 9 + i].style.borderBottom = '3px solid #344861';
       }
     }
   }
