@@ -65,7 +65,6 @@ body {
 .stats {
   display: flex;
   gap: 50px;
-  /* padding-bottom: 10px; */
 }
 .mistakes {
   margin-top: 10px;
@@ -88,6 +87,9 @@ body {
 .timer img {
   filter: invert();
 }
+.pause-btn {
+  border: none;
+}
 
 .top-section {
   display: flex;
@@ -103,10 +105,6 @@ body {
   background-color: white;
   border: 6px solid var(--dark-blue-text-color);
 }
-#unpauseButton {
-  border: none;
-}
-
 .cell {
   border: 1px solid var(--dark-blue-text-color);
   display: flex;
@@ -125,7 +123,6 @@ body {
 .cell.selected-related:not(.selected-main):not(.selected) {
   background-color: var(--visible-cells);
 }
-
 .numpad {
   display: flex;
   width: 30%;
