@@ -17,16 +17,10 @@ body {
   font-family: 'Source Sans 3', sans-serif;
   color: var(--text-color);
 }
-
 .navbar {
   margin-bottom: 30px;
   background-color: var(--dark-blue-text-color);
 }
-.navbar .navbar-brand {
-    font-weight: 400;
-    font-size: 2rem;
-}
-
 
 .container-xl {
   display: flex;
@@ -95,16 +89,9 @@ body {
   filter: invert();
 }
 
-/* * {
-  border: 1px solid red;
-} */
-
-
-
 .top-section {
   display: flex;
-  /* width: 100%; */
-  justify-content: center;
+  justify-content: space-evenly;
   flex-wrap: wrap;
 }
 .box {
@@ -119,9 +106,6 @@ body {
 #unpauseButton {
   border: none;
 }
-
-
-
 
 .cell {
   border: 1px solid var(--dark-blue-text-color);
@@ -142,15 +126,12 @@ body {
   background-color: var(--visible-cells);
 }
 
-
-
 .numpad {
   display: flex;
   width: 30%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-left: 10px;
   font-size: 3rem;
 }
 .nums {
@@ -185,14 +166,11 @@ body {
   background-color: var(--dark-blue-text-color);
 }
 .box[data-filled="true"] {
-  /* transition: 1s ease-in-out; */
-  box-shadow: 0px 0px 73px 4px var(--light-blue-text-color); /* Initial box shadow */
+  box-shadow: 0px 0px 73px 4px var(--light-blue-text-color);
 }
 .cell[data-locked="true"] {
   color: var(--dark-blue-text-color);
 }
-
-
 
 @media (max-width: 930px) {
   body {
@@ -213,8 +191,7 @@ body {
     scale: 60%;
   }
   .box {
-    width: 80vw;
-    aspect-ratio: 1/1;
+    width: 100%;
   }
   .cell {
     font-size: 1rem;
@@ -230,16 +207,12 @@ body {
   .numpad-row {
     column-gap: 6px;
     justify-content: center;
-    /* border: 1px solid red; */
     margin: 3px;
   }
 }
 
-
-
 .instructions-container {
   padding-top: 20px;
-  width: 80%;
   font-size: 1.4rem;
 }
 .instructions-container h1 {
