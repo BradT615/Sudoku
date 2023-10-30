@@ -1,7 +1,3 @@
-Based on the provided repository, here's a suggested README for the Sudoku project:
-
----
-
 # Sudoku
 
 A web-based Sudoku game built using HTML, CSS, and JavaScript.
