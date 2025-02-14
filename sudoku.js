@@ -10,6 +10,7 @@ class SudokuGame {
         };
         this.selectedCell = null;
         this.mistakes = 0;
+        this.isGameOver = false;
         this.timer = 0;
         this.timerInterval = null;
         this.isPaused = false;
@@ -76,6 +77,7 @@ class SudokuGame {
     }
 
     newGame(difficulty = 'medium') {
+        this.isGameOver = false;
         this.resetGame();
         this.generatePuzzle(this.difficulty[difficulty]);
         this.initialGrid = this.grid.map(row => [...row]);
@@ -277,32 +279,32 @@ class SudokuGame {
         this.selectedCell.classList.remove('cell-error', 'cell-user-input');
     }
 
-renderGrid() {
-    this.domElements.cells.forEach(cell => {
-        const row = parseInt(cell.dataset.row);
-        const col = parseInt(cell.dataset.col);
-        const value = this.grid[row][col];
-        
-        cell.textContent = value || '';
-        
-        // Preserve highlighting classes
-        const hasHighlight = cell.classList.contains('cell-same-value');
-        
-        if (this.initialGrid && this.initialGrid[row][col] !== 0) {
-            cell.classList.add('text-slate-900', 'dark:text-white');
-            // Don't override the highlight if it exists
-            if (!hasHighlight) {
-                cell.classList.remove('text-blue-600', 'dark:text-blue-400');
+    renderGrid() {
+        this.domElements.cells.forEach(cell => {
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            const value = this.grid[row][col];
+            
+            cell.textContent = value || '';
+            
+            // Preserve highlighting classes
+            const hasHighlight = cell.classList.contains('cell-same-value');
+            
+            if (this.initialGrid && this.initialGrid[row][col] !== 0) {
+                cell.classList.add('text-slate-900', 'dark:text-white');
+                // Don't override the highlight if it exists
+                if (!hasHighlight) {
+                    cell.classList.remove('text-blue-600', 'dark:text-blue-400');
+                }
+            } else {
+                cell.classList.remove('text-slate-900', 'dark:text-white');
+                // Don't override the highlight if it exists
+                if (!hasHighlight) {
+                    cell.classList.add('text-blue-600', 'dark:text-blue-400');
+                }
             }
-        } else {
-            cell.classList.remove('text-slate-900', 'dark:text-white');
-            // Don't override the highlight if it exists
-            if (!hasHighlight) {
-                cell.classList.add('text-blue-600', 'dark:text-blue-400');
-            }
-        }
-    });
-}
+        });
+    }
 
     isSolved() {
         for (let row = 0; row < 9; row++) {
@@ -318,25 +320,56 @@ renderGrid() {
     handleWin() {
         this.stopTimer();
         
-        // Create and show toast
-        const toast = document.createElement('div');
-        toast.className = `
-            fixed bottom-4 left-1/2 -translate-x-1/2 transform
-            flex items-center gap-2
+        // Create modal backdrop
+        const backdrop = document.createElement('div');
+        backdrop.className = `
+            fixed inset-0 
+            bg-black/50 
+            transition-opacity duration-300 
+            opacity-0
+            z-40
+        `;
+    
+        // Create modal
+        const modal = document.createElement('div');
+        modal.className = `
+            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform
+            flex flex-col items-center gap-6
             bg-white dark:bg-gray-800
             text-gray-900 dark:text-gray-100
-            px-6 py-4 rounded-lg shadow-lg
+            px-12 py-8 rounded-xl shadow-2xl
             border border-gray-200 dark:border-gray-700
             transition-all duration-300 ease-in-out
-            translate-y-full opacity-0
+            scale-95 opacity-0
             z-50
+            max-w-lg w-11/12
+        `;
+    
+        // Add close button
+        const closeButton = document.createElement('button');
+        closeButton.className = `
+            absolute top-4 right-4
+            text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
+            transition-colors
+        `;
+        closeButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-6 w-6" 
+                 fill="none" 
+                 viewBox="0 0 24 24" 
+                 stroke="currentColor">
+                <path stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M6 18L18 6M6 6l12 12" />
+            </svg>
         `;
     
         const icon = document.createElement('div');
-        icon.className = 'w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center';
+        icon.className = 'w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center';
         icon.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" 
-                 class="h-6 w-6 text-green-500" 
+                 class="h-12 w-12 text-green-500" 
                  fill="none" 
                  viewBox="0 0 24 24" 
                  stroke="currentColor">
@@ -348,48 +381,84 @@ renderGrid() {
         `;
     
         const content = document.createElement('div');
-        content.className = 'flex flex-col';
+        content.className = 'flex flex-col items-center text-center gap-3';
         
         const title = document.createElement('h3');
-        title.className = 'font-medium text-lg';
-        title.textContent = 'Puzzle Completed!';
+        title.className = 'font-bold text-3xl';
+        title.textContent = 'Congratulations!';
         
-        const message = document.createElement('p');
-        message.className = 'text-gray-600 dark:text-gray-400';
+        const subtitle = document.createElement('h4');
+        subtitle.className = 'font-medium text-xl text-gray-700 dark:text-gray-300';
+        subtitle.textContent = 'Puzzle Completed Successfully';
+        
+        const stats = document.createElement('div');
+        stats.className = 'flex flex-col gap-2 mt-2';
+        
         const minutes = Math.floor(this.timer / 60).toString().padStart(2, '0');
         const seconds = (this.timer % 60).toString().padStart(2, '0');
-        message.textContent = `Time: ${minutes}:${seconds} • Mistakes: ${this.mistakes}/3`;
+        
+        const timeStats = document.createElement('p');
+        timeStats.className = 'text-lg text-gray-600 dark:text-gray-400';
+        timeStats.innerHTML = `Time: <span class="font-semibold">${minutes}:${seconds}</span>`;
+        
+        const mistakeStats = document.createElement('p');
+        mistakeStats.className = 'text-lg text-gray-600 dark:text-gray-400';
+        mistakeStats.innerHTML = `Mistakes: <span class="font-semibold">${this.mistakes}/3</span>`;
     
+        stats.appendChild(timeStats);
+        stats.appendChild(mistakeStats);
+        
         content.appendChild(title);
-        content.appendChild(message);
-        toast.appendChild(icon);
-        toast.appendChild(content);
-        document.body.appendChild(toast);
+        content.appendChild(subtitle);
+        content.appendChild(stats);
+        
+        modal.appendChild(closeButton);
+        modal.appendChild(icon);
+        modal.appendChild(content);
+    
+        document.body.appendChild(backdrop);
+        document.body.appendChild(modal);
     
         // Start confetti
         const confetti = new Confetti();
         confetti.start();
     
-        // Animate toast in
-        requestAnimationFrame(() => {
-            toast.style.transform = 'translate(-50%, 0)';
-            toast.style.opacity = '1';
+        // Function to close modal
+        const closeModal = () => {
+            modal.style.transform = 'translate(-50%, -50%) scale(0.95)';
+            modal.style.opacity = '0';
+            backdrop.style.opacity = '0';
+            
+            setTimeout(() => {
+                document.body.removeChild(modal);
+                document.body.removeChild(backdrop);
+            }, 300);
+        };
+    
+        // Add event listeners
+        closeButton.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+    
+        // Prevent clicks inside modal from closing it
+        modal.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
     
-        // Remove toast after delay
-        setTimeout(() => {
-            toast.style.transform = 'translate(-50%, 100%)';
-            toast.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(toast);
-            }, 300);
-        }, 5000);
+        // Animate modal in
+        requestAnimationFrame(() => {
+            backdrop.style.opacity = '1';
+            modal.style.transform = 'translate(-50%, -50%) scale(1)';
+            modal.style.opacity = '1';
+        });
     }
 
     increaseMistakes() {
         this.mistakes++;
         this.updateMistakes();
-        if (this.mistakes >= 3) this.handleGameOver();
+        if (this.mistakes >= 3 && !this.isGameOver) {
+            this.isGameOver = true; // Set flag before handling game over
+            this.handleGameOver();
+        }
     }
 
     updateMistakes() {
@@ -397,11 +466,155 @@ renderGrid() {
     }
 
     handleGameOver() {
+
+        if (document.querySelector('.game-over-modal')) {
+            return;
+        }
+
         this.stopTimer();
-        setTimeout(() => {
-            alert('Game Over! You made 3 mistakes.');
-            this.newGame();
-        }, 100);
+        
+        // Create modal backdrop
+        const backdrop = document.createElement('div');
+        backdrop.className = `
+            fixed inset-0 
+            bg-black/50 
+            transition-opacity duration-300 
+            opacity-0
+            z-40
+        `;
+    
+        // Create modal
+        const modal = document.createElement('div');
+        modal.className = `
+            game-over-modal
+            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform
+            flex flex-col items-center gap-6
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            px-12 py-8 rounded-xl shadow-2xl
+            border border-gray-200 dark:border-gray-700
+            transition-all duration-300 ease-in-out
+            scale-95 opacity-0
+            z-50
+            max-w-lg w-11/12
+        `;
+    
+        // Add close button
+        const closeButton = document.createElement('button');
+        closeButton.className = `
+            absolute top-4 right-4
+            text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
+            transition-colors
+        `;
+        closeButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-6 w-6" 
+                 fill="none" 
+                 viewBox="0 0 24 24" 
+                 stroke="currentColor">
+                <path stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        `;
+    
+        const icon = document.createElement('div');
+        icon.className = 'w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center';
+        icon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-12 w-12 text-red-500" 
+                 fill="none" 
+                 viewBox="0 0 24 24" 
+                 stroke="currentColor">
+                <path stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        `;
+    
+        const content = document.createElement('div');
+        content.className = 'flex flex-col items-center text-center gap-3';
+        
+        const title = document.createElement('h3');
+        title.className = 'font-bold text-3xl text-red-600 dark:text-red-500';
+        title.textContent = 'Game Over';
+        
+        const subtitle = document.createElement('h4');
+        subtitle.className = 'font-medium text-xl text-gray-700 dark:text-gray-300';
+        subtitle.textContent = 'You made 3 mistakes';
+        
+        const stats = document.createElement('div');
+        stats.className = 'flex flex-col gap-2 mt-2';
+        
+        const minutes = Math.floor(this.timer / 60).toString().padStart(2, '0');
+        const seconds = (this.timer % 60).toString().padStart(2, '0');
+        
+        const timeStats = document.createElement('p');
+        timeStats.className = 'text-lg text-gray-600 dark:text-gray-400';
+        timeStats.innerHTML = `Time played: <span class="font-semibold">${minutes}:${seconds}</span>`;
+    
+        const tryAgainButton = document.createElement('button');
+        tryAgainButton.className = `
+            mt-6 px-6 py-3
+            bg-red-600 hover:bg-red-700
+            dark:bg-red-500 dark:hover:bg-red-600
+            text-white font-semibold rounded-lg
+            transition-colors
+            focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+            dark:focus:ring-offset-gray-800
+        `;
+        tryAgainButton.textContent = 'Try Again';
+    
+        stats.appendChild(timeStats);
+        
+        content.appendChild(title);
+        content.appendChild(subtitle);
+        content.appendChild(stats);
+        content.appendChild(tryAgainButton);
+        
+        modal.appendChild(closeButton);
+        modal.appendChild(icon);
+        modal.appendChild(content);
+    
+        document.body.appendChild(backdrop);
+        document.body.appendChild(modal);
+    
+        // Function to close modal and start new game
+        const closeModal = () => {
+            modal.style.transform = 'translate(-50%, -50%) scale(0.95)';
+            modal.style.opacity = '0';
+            backdrop.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (document.body.contains(modal)) {
+                    document.body.removeChild(modal);
+                }
+                if (document.body.contains(backdrop)) {
+                    document.body.removeChild(backdrop);
+                }
+                this.isGameOver = false; // Reset the game over flag
+                this.newGame();
+            }, 300);
+        };
+    
+        // Add event listeners
+        closeButton.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', closeModal);
+        tryAgainButton.addEventListener('click', closeModal);
+    
+        // Prevent clicks inside modal from closing it
+        modal.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    
+        // Animate modal in
+        requestAnimationFrame(() => {
+            backdrop.style.opacity = '1';
+            modal.style.transform = 'translate(-50%, -50%) scale(1)';
+            modal.style.opacity = '1';
+        });
     }
 
     togglePause() {
@@ -491,7 +704,8 @@ class Confetti {
         ];
         const shapes = ['circle', 'square', 'triangle', 'line'];
         
-        for (let i = 0; i < 150; i++) {
+        // Increased number of particles for a fuller effect
+        for (let i = 0; i < 200; i++) {
             const color = colors[Math.floor(Math.random() * colors.length)];
             const shape = shapes[Math.floor(Math.random() * shapes.length)];
             const size = Math.random() * 10 + 5;
@@ -502,14 +716,17 @@ class Confetti {
                 size,
                 color,
                 shape,
-                speedX: Math.random() * 6 - 3,
-                speedY: Math.random() * 2 + 2,
-                spin: Math.random() * 0.2 - 0.1,
+                // Reduced initial speed for longer hang time
+                speedX: Math.random() * 4 - 2,
+                speedY: Math.random() * 1.5 + 1,
+                spin: Math.random() * 0.15 - 0.075,
                 angle: Math.random() * 360,
-                wobble: Math.random() * 0.1,
-                wobbleSpeed: Math.random() * 0.1,
-                gravity: 0.1 + Math.random() * 0.1,
-                decay: 0.99 - Math.random() * 0.02,
+                wobble: Math.random() * 0.08,
+                wobbleSpeed: Math.random() * 0.08,
+                // Reduced gravity for slower fall
+                gravity: 0.05 + Math.random() * 0.05,
+                // Increased decay resistance (closer to 1 = less decay)
+                decay: 0.995 - Math.random() * 0.01,
                 opacity: 1
             });
         }
@@ -575,8 +792,8 @@ class Confetti {
             particle.angle += particle.spin;
             particle.wobble += particle.wobbleSpeed;
             
-            // Fade out
-            particle.opacity *= 0.99;
+            // Reduced opacity decay for longer visibility
+            particle.opacity *= 0.995;
             
             // Remove particles that are out of view or fully faded
             if (particle.y > this.canvas.height + particle.size || 
