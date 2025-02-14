@@ -1,0 +1,80 @@
+/* Tailwind Imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* Cell States */
+    .grid-cell {
+        @apply aspect-square
+               flex items-center justify-center
+               text-base min-[400px]:text-lg sm:text-2xl font-light min-[400px]:font-normal sm:font-medium
+               border-gray-300 dark:border-slate-700;
+    }
+
+    /* Selected state with higher specificity */
+    .grid-cell.cell-selected {
+        @apply bg-blue-100
+               hover:bg-blue-100
+               dark:!bg-blue-700/20
+               dark:hover:!bg-blue-700/20;
+    }
+
+    /* Error state with highest specificity */
+    .grid-cell.cell-error {
+        @apply !text-red-500 dark:!text-red-400;
+    }
+
+    /* Other states */
+    .cell-user-input {
+        @apply text-gray-900 dark:text-gray-100;
+    }
+
+    .cell-related {
+        @apply bg-gray-200/50 dark:bg-gray-700/30;
+    }
+
+    .cell-same-value {
+        @apply !text-blue-500;
+    }
+
+    /* Make sure error state overrides even when combined with other states */
+    .grid-cell.cell-selected.cell-error,
+    .grid-cell.cell-user-input.cell-error {
+        @apply !text-red-500 dark:!text-red-400;
+    }
+
+    /* Difficulty Buttons */
+    .difficulty-btn-active {
+        @apply px-4 
+               py-1 
+               rounded-full 
+               text-sm 
+               font-medium 
+               bg-blue-500 
+               text-white 
+               hover:bg-blue-600 
+               shadow-md 
+               hover:shadow-sm;
+    }
+
+    .difficulty-btn-inactive {
+        @apply px-4 
+               py-1 
+               rounded-full 
+               text-sm 
+               font-medium 
+               bg-gray-200/70
+               dark:bg-gray-700
+               text-gray-700 
+               dark:text-gray-300 
+               hover:bg-gray-300/70
+               dark:hover:bg-gray-600
+               shadow-md 
+               hover:shadow-sm
+               border
+               border-transparent
+               hover:border-gray-400
+               dark:hover:border-gray-500;
+    }
+}

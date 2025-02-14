@@ -1,99 +1,388 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200;300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="output.css" rel="stylesheet">
+    <script>
+        // Check for saved dark mode preference or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
 </head>
-<body>
-    
-    <nav class="navbar navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="./">
-                <img src="logos/logo-removebg.png" alt="" width="60" height="60" class="d-inline-block align-text-center">
-                Sudoku
-            </a>
-            <a href="https://github.com/BradT615/Sudoku">
-                <img src="logos/github-icon.svg" alt="" width="60" height="60" class="d-inline-block align-text-center ml-auto">
-            </a>
+<body class="h-full bg-slate-100 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Navigation -->
+    <nav class="border-b-[1px] border-gray-200 shadow-sm dark:border-gray-700 bg-slate-50 dark:bg-gray-800">
+        <div class="mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="109 135 182 135" class="h-8 w-8 sm:h-10 sm:w-10 text-gray-900 dark:text-white">
+                      <!-- Top right diagonal line -->
+                      <path 
+                          d="M 119.239 140.430
+                            L 119.239 140.430
+                            L 286.296 140.430
+                            L 262.537 164.258
+                            L 245.508 164.258
+                            L 245.508 264.453
+                            L 219.336 264.453
+                            L 219.336 164.258
+                            L 143.065 164.258
+                            Z"
+                          fill="currentColor" 
+                          stroke="none"
+                          />
+                  
+                      <!-- Main body and curves -->
+                      <path 
+                          d="M 114.258 145.411
+                          L 114.258 263.990
+                          L 171.973 263.990
+                          C 180.000 263.990 187.281 258.962 189.548 257.322
+                          C 204.689 246.370 209.788 228.218 202.126 212.552
+                          C 200.310 208.841 198.531 206.465 194.882 202.881
+                          L 191.949 200.000
+                          L 194.882 197.119
+                          C 201.908 190.217 205.195 183.077 205.589 173.860
+                          L 205.724 170.703
+                          L 181.686 170.703
+                          L 181.712 173.193 
+                          C 181.798 181.390 177.291 186.367 168.491 187.794
+                          C 167.128 188.015 164.899 188.085 159.174 188.085
+                          L 151.215 188.085
+                          L 151.215 211.915
+                          L 159.174 211.915
+                          C 168.716 211.916 171.157 212.275 174.896 214.227
+                          C 180.761 217.288 183.397 224.858 180.717 230.946
+                          C 178.631 235.685 174.701 238.360 168.457 239.289
+                          C 166.715 239.548 139.258 239.592 139.258 239.592
+                          L 139.258 170.409
+                          L 114.258 145.411
+                          Z"
+                          fill="currentColor" 
+                          stroke="none"/>
+                    </svg>
+                    <span class="ml-1 sm:ml-2 text-xl sm:text-2xl font-semibold text-gray-900 dark:text-slate-100">Sudoku</span>
+                </div>
+                <div class="flex items-center sm:gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" class="text-gray-700 dark:text-gray-400 p-2 transition-colors rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <!-- Sun icon -->
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                        </svg>
+                        <!-- Moon icon -->
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                    </button>
+                    <a href="https://github.com/BradT615/Sudoku" target="_blank" 
+                      class="transition-colors rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="stroke-gray-700 dark:stroke-gray-400 h-7 w-7 sm:h-8 sm:w-8">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
-      
 
-    <div id="main" class="container-xl">
-      <div class="header">
-        <div class="difficulty">
-          <div class="difficulty-btns">
-            <button id="difficulty-header">Difficulty:</button>
-            <button id="easy-btn" class="difficulty-btn">Easy</button>
-            <button id="medium-btn" class="difficulty-btn">Medium</button>
-            <button id="hard-btn" class="difficulty-btn">Hard</button>
-            <button id="expert-btn" class="difficulty-btn">Expert</button>
-          </div>
+    <!-- Main Content -->
+    <main class="px-2 sm:px-6 lg:px-8 py-4">
+      <!-- Game Controls -->
+        <div class="max-w-6xl mx-auto mb-4 flex justify-between px-1 sm:px-2">
+          <!-- Difficulty Selection -->
+            <div class="flex flex-wrap gap-2 items-center">
+                <h2 class="hidden md:block font-semibold text-lg dark:text-gray-100">Difficulty:</h2>
+                
+                <!-- Custom Dropdown for small screens -->
+                <div class="md:hidden relative inline-block text-left text-sm min-[400px]:text-lg">
+                    <details class="group">
+                        <summary 
+                            id="difficultyButton"
+                            class="inline-flex justify-center items-center gap-x-1.5 rounded-lg font-semibold text-gray-700 dark:text-gray-300 list-none"
+                        >
+                            <span id="currentDifficulty">Medium</span>
+                            <svg class="size-5 text-gray-400 dark:text-gray-500 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </summary>
+                
+                        <div 
+                            class="absolute left-0 z-10 mt-2 w-40 origin-top-right rounded-lg bg-white dark:bg-gray-700 ring-1 ring-black/5 dark:ring-gray-600 shadow-lg focus:outline-none"
+                        >
+                            <div class="py-1">
+                                <button 
+                                    data-difficulty="easy"
+                                    class="block w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >Easy</button>
+                                <button 
+                                    data-difficulty="medium"
+                                    class="block w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >Medium</button>
+                                <button 
+                                    data-difficulty="hard"
+                                    class="block w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >Hard</button>
+                                <button 
+                                    data-difficulty="expert"
+                                    class="block w-full px-4 py-2 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >Expert</button>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                
+                <!-- Buttons for larger screens -->
+                <div class="hidden md:flex gap-2" id="difficulty-controls">
+                <button id="easy-btn" class="difficulty-btn-inactive">Easy</button>
+                <button id="medium-btn" class="difficulty-btn-active">Medium</button>
+                <button id="hard-btn" class="difficulty-btn-inactive">Hard</button>
+                <button id="expert-btn" class="difficulty-btn-inactive">Expert</button>
+                </div>
+            </div>
+
+            <!-- Game Stats -->
+            <div class="flex gap-4 items-center justify-between text-sm min-[400px]:text-lg font-medium">
+                <div class="flex items-center gap-2">
+                    <span class="dark:text-gray-100">
+                        Mistakes: <span id="mistakes" class="text-red-500 dark:text-red-400">0</span>/3
+                    </span>
+                </div>
+                <div class="flex items-center min-[400px]:gap-2">
+                  <span id="timer" class="font-mono dark:text-gray-100">00:00</span>
+                  <button id="pause-btn" class="rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                      <!-- Play icon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="play-icon h-4 w-4 min-[400px]:h-6 min-[400px]:w-6 stroke-gray-700 dark:stroke-gray-400 fill-gray-700 dark:fill-gray-400 hidden">
+                          <polygon points="6 3 20 12 6 21 6 3"/>
+                      </svg>
+                      <!-- Pause icon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" class="pause-icon h-4 w-4 min-[400px]:h-6 min-[400px]:w-6 stroke-gray-700 dark:stroke-gray-400 fill-gray-700 dark:fill-gray-400">
+                          <rect x="6" y="4" width="4" height="16" rx="1"/>
+                          <rect x="14" y="4" width="4" height="16" rx="1"/>
+                      </svg>
+                  </button>
+                </div>
+            </div>
         </div>
+
+        <!-- Game Area -->
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8">
+          <!-- Sudoku Grid -->
+          <div class="md:col-span-2 flex items-center max-md:justify-center">
+            <div class="w-full max-w-2xl aspect-square rounded-lg">
+              <div id="sudoku-grid" class="grid grid-cols-9 w-full h-full bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"></div>
+            </div>
+          </div>
+
+            <!-- Controls -->
+            <div class="space-y-6">
+                <!-- Number Pad -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 sm:p-2">
+                    <div class="grid auto-cols-fr grid-rows-1 grid-flow-col md:grid-flow-row md:grid-cols-3 md:grid-rows-3 gap-1 sm:gap-2" id="numpad">
+
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3">
+                  <button class="clear-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md hover:shadow-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                          <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+                          <path d="M22 21H7"/>
+                          <path d="m5 11 9 9"/>
+                      </svg>
+                      Clear Cell
+                  </button>
+                  <button class="solve-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md border border-gray-500 hover:shadow-sm bg-blue-500 dark:bg-blue-500 text-white hover:bg-blue-600 dark:hover:bg-blue-600 text-white text-sm font-medium transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/>
+                          <path d="m14 7 3 3"/>
+                          <path d="M5 6v4"/>
+                          <path d="M19 14v4"/>
+                          <path d="M10 2v2"/>
+                          <path d="M7 8H3"/>
+                          <path d="M21 16h-4"/>
+                          <path d="M11 3H9"/>
+                      </svg>
+                      Solve Puzzle
+                  </button>
+                  <button class="new-game-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md hover:shadow-sm bg-gray-700 dark:bg-gray-800 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                          <path d="M3 3v5h5"/>
+                          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                          <path d="M16 16h5v5"/>
+                      </svg>
+                      New Game
+                  </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+            <div class="flex items-center gap-2 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4"/>
+                    <path d="M12 8h.01"/>
+                </svg>
+                <h2 class="text-xl font-semibold dark:text-gray-100">How to Play Sudoku</h2>
+            </div>
+            
+            <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                <div>
+                    <h3 class="font-medium mb-2">Basic Rules:</h3>
+                    <p class="text-sm leading-relaxed">
+                        Fill the 9×9 grid with numbers 1-9. Each number can only appear once in each row, column, and 3×3 box. Some numbers are already provided as clues to get you started.
+                    </p>
+                </div>
         
-        <div class="stats">
-          <div class="mistakes">
-            <h3>Mistakes: <span id="mistakes">0</span>/3</h3>
-          </div>
-          <div class="timer">
-            <h2 id="timer">00:00</h2>
-            <button id="pause-btn" class="pause-btn">
-              <img id="play-pause-icon" src="logos/play.png" alt="Play/Pause">
-            </button>
-          </div>
+                <div>
+                    <h3 class="font-medium mb-2">Controls:</h3>
+                    <div class="text-sm space-y-2">
+                        <p>• Click any empty cell to select it</p>
+                        <p>• Use the number pad or your keyboard to input numbers</p>
+                        <p>• Use the Clear Cell button or press Delete/Backspace to remove a number</p>
+                    </div>
+                </div>
+        
+                <div>
+                    <h3 class="font-medium mb-2">Difficulty Levels:</h3>
+                    <div class="text-sm space-y-2">
+                        <p>• <span class="font-medium">Easy:</span> More starting numbers, ideal for beginners</p>
+                        <p>• <span class="font-medium">Medium:</span> Balanced difficulty, good for regular players</p>
+                        <p>• <span class="font-medium">Hard:</span> Fewer starting numbers, requires advanced techniques</p>
+                        <p>• <span class="font-medium">Expert:</span> Minimal starting numbers, greatest challenge</p>
+                    </div>
+                </div>
+        
+                <div>
+                    <h3 class="font-medium mb-2">Features:</h3>
+                    <div class="text-sm space-y-2">
+                        <p>• Timer tracks your solving speed</p>
+                        <p>• Mistake counter (limited to 3)</p>
+                        <p>• Pause/Resume functionality</p>
+                        <p>• Option to start a new game or solve the current puzzle</p>
+                    </div>
+                </div>
+                
+                <div class="text-sm bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <p class="font-medium mb-2">Tip:</p>
+                    <p>Start with the most obvious numbers first. Look for rows, columns, or boxes that already have several numbers filled in, as these will give you the most clues about what numbers can go where.</p>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="top-section">
-        <div class="box"></div>
-        <div id="numpad" class="numpad">
-          <div class="nums">
-            <div class="numpad-row">
-              <button class="num-btn">1</button>
-              <button class="num-btn">2</button>
-              <button class="num-btn">3</button>
-            </div>
-            <div class="numpad-row">
-              <button class="num-btn">4</button>
-              <button class="num-btn">5</button>
-              <button class="num-btn">6</button>
-            </div>
-            <div class="numpad-row">
-              <button class="num-btn">7</button>
-              <button class="num-btn">8</button>
-              <button class="num-btn">9</button>
-            </div>
-          </div>
-          
-          <div class="btns">
-            <button class="clear-btn">Clear Cell</button>
-            <button class="solve-btn">Solve</button>
-            <button class="new-game-btn">New Game</button>
-          </div>
-        </div>
-      </div>
-      <div class="instructions-container">
-        <h1>Instructions</h1>
-        <ul>
-          <li>Digits from 1 to 9: Sudoku is played with the numbers 1 to 9.</li>
-          <li>No repetition in rows: Each row of the grid must contain each of the digits from 1 to 9 exactly once.</li>
-          <li>No repetition in columns: Each column of the grid must contain each of the digits from 1 to 9 exactly once.</li>
-          <li>No repetition in boxes: Each of the 3x3 boxes must contain each of the digits from 1 to 9 exactly once.</li>
-          <li>Pre-filled squares: Some squares will be filled in to start the game; these numbers cannot be changed.</li>
-        </ul>
-      </div>
-    </div>
-      
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        // Theme toggle functionality
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+
+        // Set initial icon state
+        function setInitialIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleLightIcon.classList.remove('hidden');
+                themeToggleDarkIcon.classList.add('hidden');
+            } else {
+                themeToggleLightIcon.classList.add('hidden');
+                themeToggleDarkIcon.classList.remove('hidden');
+            }
+        }
+        setInitialIcon();
+
+        // Theme toggle click handler
+        themeToggleBtn.addEventListener('click', function() {
+            // Toggle theme
+            document.documentElement.classList.toggle('dark');
+            
+            // Toggle icons
+            themeToggleLightIcon.classList.toggle('hidden');
+            themeToggleDarkIcon.classList.toggle('hidden');
+            
+            // Save preference to localStorage
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generate numpad
+            const numpad = document.getElementById('numpad');
+            for (let i = 1; i <= 9; i++) {
+                const button = document.createElement('button');
+                button.className = 'aspect-square rounded-lg bg-gray-200/70 dark:bg-gray-700 text-xl min-[400px]:text-2xl md:text-4xl font-light min-[400px]:font-normal sm:font-medium dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent hover:border-gray-400 dark:hover:border-gray-500';
+                button.textContent = i;
+                numpad.appendChild(button);
+            }
+
+            // Initialize game grid
+            const grid = document.getElementById('sudoku-grid');
+            for (let i = 0; i < 81; i++) {
+                const cell = document.createElement('div');
+                const row = Math.floor(i / 9);
+                const col = i % 9;
+                
+                cell.className = `
+                    grid-cell
+                    ${col === 0 ? 'border-l' : ''}
+                    ${row === 0 ? 'border-t' : ''}
+                    ${(col + 1) % 3 === 0 && col !== 8 ? 'border-r-2' : 'border-r'}
+                    ${(row + 1) % 3 === 0 && row !== 8 ? 'border-b-2' : 'border-b'}
+                    ${i === 0 ? 'rounded-tl-lg' : ''} 
+                    ${i === 8 ? 'rounded-tr-lg' : ''}
+                    ${i === 72 ? 'rounded-bl-lg' : ''}
+                    ${i === 80 ? 'rounded-br-lg' : ''}
+                    hover:bg-slate-100 dark:hover:bg-slate-700/50
+                `;
+                
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                
+                grid.appendChild(cell);
+            }
+
+            // Initialize difficulty dropdown
+            const details = document.querySelector('details');
+            const currentDifficultySpan = document.getElementById('currentDifficulty');
+            const difficultyButtons = document.querySelectorAll('[data-difficulty]');
+            
+            // Handle difficulty selection
+            difficultyButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const difficulty = e.target.dataset.difficulty;
+                    currentDifficultySpan.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                    
+                    // Close the dropdown
+                    details.removeAttribute('open');
+                    
+                    // Start new game with selected difficulty
+                    if (window.game) {
+                        window.game.newGame(difficulty);
+                        
+                        // Update the larger screen buttons if they exist
+                        const largeScreenBtn = document.querySelector(`#${difficulty}-btn`);
+                        if (largeScreenBtn) {
+                            window.game.updateDifficultyUI(largeScreenBtn);
+                        }
+                    }
+                });
+            });
+
+            // Initialize game and make it globally accessible
+            window.game = new SudokuGame();
+        });
+    </script>
     <script src="sudoku.js"></script>
 </body>
 </html>
