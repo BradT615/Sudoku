@@ -1,4 +1,3 @@
-/* Tailwind Imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +8,8 @@
         @apply aspect-square
                flex items-center justify-center
                text-base min-[400px]:text-lg sm:text-2xl font-light min-[400px]:font-normal sm:font-medium
-               border-gray-300 dark:border-slate-700;
+               border-gray-300 dark:border-slate-700
+               transition-colors duration-[50];
     }
 
     /* Selected state with higher specificity */
@@ -36,6 +36,35 @@
 
     .cell-same-value {
         @apply !text-blue-500;
+    }
+
+    /* Paused game state */
+    .game-paused {
+        @apply relative;
+    }
+
+    .game-paused .grid-cell {
+        @apply text-transparent dark:text-transparent;
+    }
+
+    /* Large play button overlay */
+    .game-paused::before {
+        content: '';
+        @apply absolute inset-0 bg-white dark:bg-gray-800 rounded-lg;
+    }
+
+    .game-paused::after {
+        content: '';
+        @apply absolute inset-0 m-auto w-32 h-32
+               bg-blue-500 rounded-full z-20 cursor-pointer
+               flex items-center justify-center
+               transition-transform duration-200
+               hover:scale-110 shadow-lg;
+    
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpolygon points='8,5 20,12 8,19'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 80%;
     }
 
     /* Make sure error state overrides even when combined with other states */

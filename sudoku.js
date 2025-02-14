@@ -49,6 +49,12 @@ class SudokuGame {
             cell.addEventListener('click', (e) => this.selectCell(e.target))
         );
 
+        this.domElements.grid.addEventListener('click', (e) => {
+            if (this.isPaused && (e.target === this.domElements.grid || this.domElements.grid.contains(e.target))) {
+                this.togglePause();
+            }
+        });
+
         document.addEventListener('keydown', (e) => this.handleKeyboardInput(e));
 
         this.domElements.difficultyBtns.forEach(btn => 

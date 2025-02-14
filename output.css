@@ -1,6 +1,6 @@
-/* Tailwind Imports */
-
-/* ! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com */
+/*
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
+*/
 
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -590,6 +590,10 @@ video {
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 300;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  transition-duration: 50;
 }
 
 :is(.dark .grid-cell) {
@@ -668,6 +672,72 @@ video {
 .cell-same-value {
   --tw-text-opacity: 1 !important;
   color: rgb(59 130 246 / var(--tw-text-opacity)) !important;
+}
+
+/* Paused game state */
+
+.game-paused {
+  position: relative;
+}
+
+.game-paused .grid-cell {
+  color: transparent;
+}
+
+:is(.dark .game-paused .grid-cell) {
+  color: transparent;
+}
+
+/* Large play button overlay */
+
+.game-paused::before {
+  content: '';
+  position: absolute;
+  inset: 0px;
+  border-radius: 0.5rem;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+:is(.dark .game-paused)::before {
+  --tw-bg-opacity: 1;
+  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+}
+
+.game-paused::after {
+  content: '';
+  position: absolute;
+  inset: 0px;
+  z-index: 20;
+  margin: auto;
+  display: flex;
+  height: 8rem;
+  width: 8rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+.game-paused:hover::after {
+  --tw-scale-x: 1.1;
+  --tw-scale-y: 1.1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.game-paused::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpolygon points='8,5 20,12 8,19'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 80%;
 }
 
 /* Make sure error state overrides even when combined with other states */
