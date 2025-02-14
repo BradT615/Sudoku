@@ -14,7 +14,7 @@
         }
     </script>
 </head>
-<body class="h-full bg-slate-100 dark:bg-gray-900 transition-colors duration-200">
+<body class="h-full bg-slate-100 dark:bg-gray-900">
     <!-- Navigation -->
     <nav class="border-b-[1px] border-gray-200 shadow-sm dark:border-gray-700 bg-slate-50 dark:bg-gray-800">
         <div class="mx-auto px-2 sm:px-6 lg:px-8">
@@ -70,7 +70,7 @@
                 </div>
                 <div class="flex items-center sm:gap-4">
                     <!-- Dark Mode Toggle -->
-                    <button id="theme-toggle" class="text-gray-700 dark:text-gray-400 p-2 transition-colors rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <button id="theme-toggle" class="text-gray-700 dark:text-gray-400 p-2 rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <!-- Sun icon -->
                         <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
@@ -81,7 +81,7 @@
                         </svg>
                     </button>
                     <a href="https://github.com/BradT615/Sudoku" target="_blank" 
-                      class="transition-colors rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                      class="rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="stroke-gray-700 dark:stroke-gray-400 h-7 w-7 sm:h-8 sm:w-8">
                             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
                             <path d="M9 18c-4.51 2-5-2-7-2"/>
@@ -108,7 +108,7 @@
                             class="inline-flex justify-center items-center gap-x-1.5 rounded-lg font-semibold text-gray-700 dark:text-gray-300 list-none"
                         >
                             <span id="currentDifficulty">Medium</span>
-                            <svg class="size-5 text-gray-400 dark:text-gray-500 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="size-5 text-gray-400 dark:text-gray-500 group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                             </svg>
                         </summary>
@@ -156,7 +156,7 @@
                 </div>
                 <div class="flex items-center min-[400px]:gap-2">
                   <span id="timer" class="font-mono dark:text-gray-100">00:00</span>
-                  <button id="pause-btn" class="rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                  <button id="pause-btn" class="rounded-full border border-transparent dark:hover:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
                       <!-- Play icon -->
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="play-icon h-4 w-4 min-[400px]:h-6 min-[400px]:w-6 stroke-gray-700 dark:stroke-gray-400 fill-gray-700 dark:fill-gray-400 hidden">
                           <polygon points="6 3 20 12 6 21 6 3"/>
@@ -191,7 +191,7 @@
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col gap-3">
-                  <button class="clear-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md hover:shadow-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <button class="clear-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md hover:shadow-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600">
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
                           <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
                           <path d="M22 21H7"/>
@@ -199,7 +199,7 @@
                       </svg>
                       Clear Cell
                   </button>
-                  <button class="solve-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md border border-gray-500 hover:shadow-sm bg-blue-500 dark:bg-blue-500 text-white hover:bg-blue-600 dark:hover:bg-blue-600 text-white text-sm font-medium transition-colors">
+                  <button class="solve-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md border border-gray-500 hover:shadow-sm bg-blue-500 dark:bg-blue-500 text-white hover:bg-blue-600 dark:hover:bg-blue-600 text-white text-sm font-medium">
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
                           <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/>
                           <path d="m14 7 3 3"/>
@@ -212,7 +212,7 @@
                       </svg>
                       Solve Puzzle
                   </button>
-                  <button class="new-game-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md hover:shadow-sm bg-gray-700 dark:bg-gray-800 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors">
+                  <button class="new-game-btn group flex items-center justify-center gap-2 px-4 py-4 rounded-lg shadow-md hover:shadow-sm bg-gray-700 dark:bg-gray-800 text-white text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700">
                       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
                           <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                           <path d="M3 3v5h5"/>

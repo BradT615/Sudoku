@@ -420,7 +420,6 @@ class SudokuGame {
         backdrop.className = `
             fixed inset-0 
             bg-black/50 
-            transition-opacity duration-300 
             opacity-0
             z-40
         `;
@@ -434,7 +433,6 @@ class SudokuGame {
             text-gray-900 dark:text-gray-100
             px-12 py-8 rounded-xl shadow-2xl
             border border-gray-200 dark:border-gray-700
-            transition-all duration-300 ease-in-out
             scale-95 opacity-0
             z-50
             max-w-lg w-11/12
@@ -498,7 +496,6 @@ class SudokuGame {
         closeButton.className = `
             absolute top-4 right-4
             text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
-            transition-colors
         `;
         closeButton.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" 
@@ -616,7 +613,6 @@ class SudokuGame {
             mt-6 px-6 py-3
             ${config.className}
             text-white font-semibold rounded-lg
-            transition-colors
             focus:outline-none focus:ring-2 focus:ring-${config.color}-500 focus:ring-offset-2
             dark:focus:ring-offset-gray-800
         `;
