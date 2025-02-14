@@ -95,7 +95,7 @@
     <!-- Main Content -->
     <main class="px-2 sm:px-6 lg:px-8 py-4">
       <!-- Game Controls -->
-        <div class="max-w-6xl mx-auto mb-4 flex justify-between px-1 sm:px-2">
+        <div class="max-w-5xl mx-auto mb-4 flex justify-between px-1 sm:px-2">
           <!-- Difficulty Selection -->
             <div class="flex flex-wrap gap-2 items-center">
                 <h2 class="hidden md:block font-semibold text-lg dark:text-gray-100">Difficulty:</h2>
@@ -172,7 +172,7 @@
         </div>
 
         <!-- Game Area -->
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8">
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8">
           <!-- Sudoku Grid -->
           <div class="md:col-span-2 flex items-center max-md:justify-center">
             <div class="w-full max-w-2xl aspect-square rounded-lg">
@@ -225,7 +225,7 @@
             </div>
         </div>
 
-        <div class="max-w-6xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div class="max-w-5xl mx-auto mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
             <div class="flex items-center gap-2 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
                     <circle cx="12" cy="12" r="10"/>
@@ -237,15 +237,15 @@
             
             <div class="space-y-4 text-gray-700 dark:text-gray-300">
                 <div>
-                    <h3 class="font-medium mb-2">Basic Rules:</h3>
-                    <p class="text-sm leading-relaxed">
+                    <h3 class="sm:text-lg font-medium mb-2">Basic Rules:</h3>
+                    <p class="max-sm:text-sm leading-relaxed">
                         Fill the 9×9 grid with numbers 1-9. Each number can only appear once in each row, column, and 3×3 box. Some numbers are already provided as clues to get you started.
                     </p>
                 </div>
         
                 <div>
-                    <h3 class="font-medium mb-2">Controls:</h3>
-                    <div class="text-sm space-y-2">
+                    <h3 class="sm:text-lg font-medium mb-2">Controls:</h3>
+                    <div class="max-sm:text-sm space-y-2">
                         <p>• Click any empty cell to select it</p>
                         <p>• Use the number pad or your keyboard to input numbers</p>
                         <p>• Use the Clear Cell button or press Delete/Backspace to remove a number</p>
@@ -253,8 +253,8 @@
                 </div>
         
                 <div>
-                    <h3 class="font-medium mb-2">Difficulty Levels:</h3>
-                    <div class="text-sm space-y-2">
+                    <h3 class="sm:text-lg font-medium mb-2">Difficulty Levels:</h3>
+                    <div class="max-sm:text-sm space-y-2">
                         <p>• <span class="font-medium">Easy:</span> More starting numbers, ideal for beginners</p>
                         <p>• <span class="font-medium">Medium:</span> Balanced difficulty, good for regular players</p>
                         <p>• <span class="font-medium">Hard:</span> Fewer starting numbers, requires advanced techniques</p>
@@ -263,8 +263,8 @@
                 </div>
         
                 <div>
-                    <h3 class="font-medium mb-2">Features:</h3>
-                    <div class="text-sm space-y-2">
+                    <h3 class="sm:text-lg font-medium mb-2">Features:</h3>
+                    <div class="max-sm:text-sm space-y-2">
                         <p>• Timer tracks your solving speed</p>
                         <p>• Mistake counter (limited to 3)</p>
                         <p>• Pause/Resume functionality</p>
@@ -272,9 +272,9 @@
                     </div>
                 </div>
                 
-                <div class="text-sm bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    <p class="font-medium mb-2">Tip:</p>
-                    <p>Start with the most obvious numbers first. Look for rows, columns, or boxes that already have several numbers filled in, as these will give you the most clues about what numbers can go where.</p>
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <p class="sm:text-lg font-medium mb-2">Tip:</p>
+                    <p class="max-sm:text-sm">Start with the most obvious numbers first. Look for rows, columns, or boxes that already have several numbers filled in, as these will give you the most clues about what numbers can go where.</p>
                 </div>
             </div>
         </div>
@@ -378,6 +378,10 @@
                     }
                 });
             });
+
+            if (window.game) {
+                console.warn('A game instance already exists!');
+            }
 
             // Initialize game and make it globally accessible
             window.game = new SudokuGame();

@@ -35,7 +35,7 @@
     }
 
     .cell-same-value {
-        @apply !text-blue-500;
+        @apply !bg-blue-100 dark:!bg-blue-700/20;
     }
 
     /* Paused game state */
