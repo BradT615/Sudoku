@@ -196,12 +196,8 @@ class SudokuGame {
         this.isPaused = false;
         
         this.resetGameState();
-        
-        // Use the SudokuGenerator to create a new puzzle
-        const emptyCells = this.difficulty[difficulty];
-        this.grid = SudokuGenerator.generatePuzzle(emptyCells);
+        this.generatePuzzle(this.difficulty[difficulty]);
         this.initialGrid = this.grid.map(row => [...row]);
-        
         this.renderGrid();
         
         // Ensure timer is fully reset
@@ -271,24 +267,98 @@ class SudokuGame {
         }
     }
 
-    // ---------- Puzzle Solving ----------
+    // ---------- Puzzle Generation and Solving ----------
+
+    generatePuzzle(emptyCells) {
+        this.generateSolvedGrid();
+        let positions = Array.from({length: 81}, (_, i) => [Math.floor(i/9), i%9]);
+        positions = this.shuffle(positions);
+        
+        for (let i = 0; i < emptyCells && i < positions.length; i++) {
+            const [row, col] = positions[i];
+            this.grid[row][col] = 0;
+        }
+    }
+
+    generateSolvedGrid() {
+        // Start with a valid diagonal
+        const nums = this.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        for (let i = 0; i < 9; i++) {
+            this.grid[i][i] = nums[i];
+        }
+        
+        // Fill in the rest of the grid
+        this.solve(true);
+    }
+
+    solve(initial = false) {
+        const empty = this.findEmpty();
+        if (!empty) return true;
+
+        const [row, col] = empty;
+        const nums = this.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+        for (const num of nums) {
+            if (this.isValid(row, col, num)) {
+                this.grid[row][col] = num;
+                if (this.solve(initial)) {
+                    if (!initial) this.renderGrid();
+                    return true;
+                }
+                this.grid[row][col] = 0;
+            }
+        }
+        return false;
+    }
+
+    findEmpty() {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.grid[row][col] === 0) return [row, col];
+            }
+        }
+        return null;
+    }
+
+    isValid(row, col, num) {
+        // Check row
+        for (let x = 0; x < 9; x++) {
+            if (x !== col && this.grid[row][x] === num) return false;
+        }
+
+        // Check column
+        for (let x = 0; x < 9; x++) {
+            if (x !== row && this.grid[x][col] === num) return false;
+        }
+
+        // Check 3x3 box
+        const boxRow = Math.floor(row / 3) * 3;
+        const boxCol = Math.floor(col / 3) * 3;
+        
+        for (let r = boxRow; r < boxRow + 3; r++) {
+            for (let c = boxCol; c < boxCol + 3; c++) {
+                if (r !== row && c !== col && this.grid[r][c] === num) return false;
+            }
+        }
+
+        return true;
+    }
 
     solvePuzzle() {
-        // Create a copy of the grid to solve
-        const gridCopy = this.grid.map(row => [...row]);
-        
-        // Use the SudokuGenerator to solve the puzzle
-        SudokuGenerator.solve(gridCopy);
-        
-        // Update our grid with the solution
-        this.grid = gridCopy;
-        
+        this.solve();
         this.renderGrid();
         this.clearAllTimers();
     }
 
     isSolved() {
-        return SudokuGenerator.isSolved(this.grid);
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.grid[row][col] === 0 || !this.isValid(row, col, this.grid[row][col])) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     // ---------- User Input Handling ----------
@@ -306,7 +376,7 @@ class SudokuGame {
         this.grid[row][col] = val;
         this.selectedCell.textContent = val;
         
-        if (!SudokuGenerator.validateMove(this.grid, row, col, val)) {
+        if (!this.isValid(row, col, val)) {
             this.selectedCell.classList.remove('cell-user-input');
             this.selectedCell.classList.add('cell-error');
             this.increaseMistakes();
@@ -419,6 +489,17 @@ class SudokuGame {
 
     updateMistakes() {
         this.domElements.mistakesDisplay.textContent = this.mistakes;
+    }
+
+    // ---------- Utility Methods ----------
+
+    shuffle(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
     }
 
     // ---------- Modal Handling ----------
