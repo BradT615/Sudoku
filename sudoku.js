@@ -1,10 +1,64 @@
 class SudokuGame {
     constructor() {
+        this.createGameElements();
         this.initializeGameState();
         this.initializeDOM();
         this.setupEventListeners();
-        this.newGame('easy');
+        this.newGame('medium');
     }
+
+    // ---------- DOM Creation Methods ----------
+
+    createGameElements() {
+        // Generate numpad
+        const numpad = document.getElementById('numpad');
+        if (!numpad) return;
+        
+        // Clear any existing content
+        numpad.innerHTML = '';
+        
+        // Create number buttons
+        for (let i = 1; i <= 9; i++) {
+            const button = document.createElement('button');
+            button.className = 'aspect-square rounded-md bg-gray-200/70 dark:bg-gray-700 text-xl min-[400px]:text-2xl md:text-4xl font-light min-[400px]:font-normal sm:font-medium dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 border border-transparent hover:border-gray-400 dark:hover:border-gray-500 transition-colors';
+            button.textContent = i;
+            numpad.appendChild(button);
+        }
+
+        // Initialize game grid
+        const grid = document.getElementById('sudoku-grid');
+        if (!grid) return;
+        
+        // Clear any existing content
+        grid.innerHTML = '';
+        
+        // Create grid cells
+        for (let i = 0; i < 81; i++) {
+            const cell = document.createElement('div');
+            const row = Math.floor(i / 9);
+            const col = i % 9;
+            
+            cell.className = `
+                grid-cell
+                ${col === 0 ? 'border-l' : ''}
+                ${row === 0 ? 'border-t' : ''}
+                ${(col + 1) % 3 === 0 && col !== 8 ? 'border-r-2' : 'border-r'}
+                ${(row + 1) % 3 === 0 && row !== 8 ? 'border-b-2' : 'border-b'}
+                ${i === 0 ? 'rounded-tl-lg' : ''} 
+                ${i === 8 ? 'rounded-tr-lg' : ''}
+                ${i === 72 ? 'rounded-bl-lg' : ''}
+                ${i === 80 ? 'rounded-br-lg' : ''}
+                hover:bg-slate-100 dark:hover:bg-slate-700/50
+            `;
+            
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            
+            grid.appendChild(cell);
+        }
+    }
+
+    // ---------- Initialization Methods ----------
 
     initializeGameState() {
         this.grid = Array(9).fill().map(() => Array(9).fill(0));
@@ -41,34 +95,44 @@ class SudokuGame {
             pauseBtn: document.getElementById('pause-btn'),
             mistakesDisplay: document.getElementById('mistakes'),
             timerDisplay: document.getElementById('timer'),
-            playPauseIcon: document.getElementById('play-pause-icon')
+            playIcon: document.querySelector('.play-icon'),
+            pauseIcon: document.querySelector('.pause-icon')
         };
     }
 
     setupEventListeners() {
-        const { numButtons, clearBtn, solveBtn, newGameBtn, pauseBtn, cells, grid, difficultyBtns } = this.domElements;
+        const { 
+            numButtons, clearBtn, solveBtn, newGameBtn, 
+            pauseBtn, cells, grid, difficultyBtns 
+        } = this.domElements;
 
+        // Number pad events
         numButtons.forEach(btn => 
             btn.addEventListener('click', () => this.handleNumberInput(btn.textContent))
         );
         
+        // Action button events
         clearBtn.addEventListener('click', () => this.clearCell());
         solveBtn.addEventListener('click', () => this.solvePuzzle());
         newGameBtn.addEventListener('click', () => this.newGame());
         pauseBtn.addEventListener('click', () => this.togglePause());
 
+        // Cell selection events
         cells.forEach(cell => 
             cell.addEventListener('click', (e) => this.selectCell(e.target))
         );
 
+        // Resume from pause when clicking on grid
         grid.addEventListener('click', (e) => {
             if (this.isPaused && (e.target === grid || grid.contains(e.target))) {
                 this.togglePause();
             }
         });
 
+        // Keyboard events
         document.addEventListener('keydown', (e) => this.handleKeyboardInput(e));
 
+        // Difficulty selection events
         difficultyBtns.forEach(btn => 
             btn.addEventListener('click', () => {
                 const difficulty = btn.textContent.toLowerCase();
@@ -78,7 +142,8 @@ class SudokuGame {
         );
     }
 
-    // Timer Management
+    // ---------- Timer Management ----------
+
     clearAllTimers() {
         if (this.timer.interval) {
             clearInterval(this.timer.interval);
@@ -90,12 +155,17 @@ class SudokuGame {
         });
         
         this.timer.activeIntervals.clear();
-        this.timer.seconds = 0;
         this.timer.isRunning = false;
+        
+        // Don't reset the seconds value here - we'll do that explicitly when needed
     }
 
     startTimer() {
         this.clearAllTimers();
+        
+        // Ensure the timer display is initially set to 00:00
+        this.timer.seconds = 0;
+        this.updateTimerDisplay();
         
         if (this.isPaused) return;
         
@@ -118,7 +188,8 @@ class SudokuGame {
         this.domElements.timerDisplay.textContent = `${minutes}:${seconds}`;
     }
 
-    // Game State Management
+    // ---------- Game State Management ----------
+
     newGame(difficulty = 'medium') {
         this.clearAllTimers();
         this.isGameOver = false;
@@ -128,6 +199,10 @@ class SudokuGame {
         this.generatePuzzle(this.difficulty[difficulty]);
         this.initialGrid = this.grid.map(row => [...row]);
         this.renderGrid();
+        
+        // Ensure timer is fully reset
+        this.timer.seconds = 0;
+        this.updateTimerDisplay();
         
         this.updatePauseButton();
         this.startTimer();
@@ -139,27 +214,61 @@ class SudokuGame {
         this.updateMistakes();
         this.selectedCell = null;
         this.clearCellStyles();
+        
+        // Reset timer display
+        if (this.domElements?.timerDisplay) {
+            this.domElements.timerDisplay.textContent = "00:00";
+        }
     }
 
     clearCellStyles() {
         if (!this.domElements?.cells) return;
         
+        const cellClasses = [
+            'cell-selected',
+            'cell-related',
+            'cell-same-value',
+            'cell-error',
+            'cell-user-input',
+            'text-slate-900',
+            'dark:text-white',
+            'text-blue-600',
+            'dark:text-blue-400'
+        ];
+        
         this.domElements.cells.forEach(cell => {
-            cell.classList.remove(
-                'cell-selected',
-                'cell-related',
-                'cell-same-value',
-                'cell-error',
-                'cell-user-input',
-                'text-slate-900',
-                'dark:text-white',
-                'text-blue-600',
-                'dark:text-blue-400'
-            );
+            cell.classList.remove(...cellClasses);
         });
     }
 
-    // Puzzle Generation and Solving
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        this.updatePauseButton();
+        
+        if (this.isPaused) {
+            this.domElements.grid.classList.add('game-paused');
+        } else {
+            this.domElements.grid.classList.remove('game-paused');
+            if (!this.timer.isRunning) {
+                this.startTimer();
+            }
+        }
+    }
+
+    updatePauseButton() {
+        const { playIcon, pauseIcon } = this.domElements;
+        
+        if (this.isPaused) {
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+        } else {
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+        }
+    }
+
+    // ---------- Puzzle Generation and Solving ----------
+
     generatePuzzle(emptyCells) {
         this.generateSolvedGrid();
         let positions = Array.from({length: 81}, (_, i) => [Math.floor(i/9), i%9]);
@@ -172,10 +281,13 @@ class SudokuGame {
     }
 
     generateSolvedGrid() {
+        // Start with a valid diagonal
         const nums = this.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         for (let i = 0; i < 9; i++) {
             this.grid[i][i] = nums[i];
         }
+        
+        // Fill in the rest of the grid
         this.solve(true);
     }
 
@@ -238,13 +350,26 @@ class SudokuGame {
         this.clearAllTimers();
     }
 
-    // User Input Handling
+    isSolved() {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (this.grid[row][col] === 0 || !this.isValid(row, col, this.grid[row][col])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // ---------- User Input Handling ----------
+
     handleNumberInput(num) {
         if (!this.selectedCell || this.isPaused) return;
         
         const row = parseInt(this.selectedCell.dataset.row);
         const col = parseInt(this.selectedCell.dataset.col);
         
+        // Don't allow modifying initial cells
         if (this.initialGrid[row][col] !== 0) return;
         
         const val = parseInt(num);
@@ -310,6 +435,7 @@ class SudokuGame {
         const row = parseInt(this.selectedCell.dataset.row);
         const col = parseInt(this.selectedCell.dataset.col);
         
+        // Don't allow clearing initial cells
         if (this.initialGrid[row][col] !== 0) return;
         
         this.grid[row][col] = 0;
@@ -317,7 +443,8 @@ class SudokuGame {
         this.selectedCell.classList.remove('cell-error', 'cell-user-input');
     }
 
-    // UI Updates
+    // ---------- UI Updates ----------
+
     renderGrid() {
         this.domElements.cells.forEach(cell => {
             const row = parseInt(cell.dataset.row);
@@ -351,45 +478,6 @@ class SudokuGame {
         activeBtn.classList.add('difficulty-btn-active');
     }
 
-    togglePause() {
-        this.isPaused = !this.isPaused;
-        this.updatePauseButton();
-        
-        if (this.isPaused) {
-            this.domElements.grid.classList.add('game-paused');
-        } else {
-            this.domElements.grid.classList.remove('game-paused');
-            if (!this.timer.isRunning) {
-                this.startTimer();
-            }
-        }
-    }
-
-    updatePauseButton() {
-        const playIcon = document.querySelector('.play-icon');
-        const pauseIcon = document.querySelector('.pause-icon');
-        
-        if (this.isPaused) {
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-        } else {
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
-        }
-    }
-
-    // Game State Checks
-    isSolved() {
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                if (this.grid[row][col] === 0 || !this.isValid(row, col, this.grid[row][col])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     increaseMistakes() {
         this.mistakes++;
         this.updateMistakes();
@@ -403,27 +491,27 @@ class SudokuGame {
         this.domElements.mistakesDisplay.textContent = this.mistakes;
     }
 
-    // Utility Functions
+    // ---------- Utility Methods ----------
+
     shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
         }
-        return array;
+        return newArray;
     }
 
-    // Modal Handling
+    // ---------- Modal Handling ----------
+
     createModal(config) {
         const { type, title, subtitle, stats, buttonConfig } = config;
         
+        // Create backdrop
         const backdrop = document.createElement('div');
-        backdrop.className = `
-            fixed inset-0 
-            bg-black/50 
-            opacity-0
-            z-40
-        `;
+        backdrop.className = 'fixed inset-0 bg-black/50 opacity-0 z-40 transition-opacity duration-300';
     
+        // Create modal
         const modal = document.createElement('div');
         modal.className = `
             ${type === 'game-over' ? 'game-over-modal' : ''}
@@ -436,30 +524,29 @@ class SudokuGame {
             scale-95 opacity-0
             z-50
             max-w-lg w-11/12
+            transition-all duration-300
         `;
 
-        // Close button
-        const closeButton = this.createCloseButton();
-        
-        // Status icon
-        const icon = this.createStatusIcon(type);
-        
-        // Content
+        // Create modal components
+        const closeButton = this.createModalCloseButton();
+        const icon = this.createModalStatusIcon(type);
         const content = this.createModalContent(title, subtitle, stats, buttonConfig);
         
+        // Assemble modal
         modal.appendChild(closeButton);
         modal.appendChild(icon);
         modal.appendChild(content);
     
+        // Add to document
         document.body.appendChild(backdrop);
         document.body.appendChild(modal);
     
         // Start confetti for win condition
         if (type === 'win') {
-            const confetti = new Confetti();
-            confetti.start();
+            new Confetti().start();
         }
     
+        // Close modal function
         const closeModal = () => {
             modal.style.transform = 'translate(-50%, -50%) scale(0.95)';
             modal.style.opacity = '0';
@@ -476,14 +563,17 @@ class SudokuGame {
             }, 300);
         };
     
+        // Add event listeners
         closeButton.addEventListener('click', closeModal);
         backdrop.addEventListener('click', closeModal);
         if (buttonConfig?.button) {
             buttonConfig.button.addEventListener('click', closeModal);
         }
     
+        // Prevent click propagation on modal
         modal.addEventListener('click', (e) => e.stopPropagation());
     
+        // Animate modal in
         requestAnimationFrame(() => {
             backdrop.style.opacity = '1';
             modal.style.transform = 'translate(-50%, -50%) scale(1)';
@@ -491,12 +581,9 @@ class SudokuGame {
         });
     }
 
-    createCloseButton() {
+    createModalCloseButton() {
         const closeButton = document.createElement('button');
-        closeButton.className = `
-            absolute top-4 right-4
-            text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
-        `;
+        closeButton.className = 'absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors';
         closeButton.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" 
                  class="h-6 w-6" 
@@ -512,73 +599,65 @@ class SudokuGame {
         return closeButton;
     }
 
-    createStatusIcon(type) {
+    createModalStatusIcon(type) {
+        const isWin = type === 'win';
         const icon = document.createElement('div');
         icon.className = `w-20 h-20 rounded-full ${
-            type === 'win' 
-                ? 'bg-green-100 dark:bg-green-900/30' 
-                : 'bg-red-100 dark:bg-red-900/30'
+            isWin ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
         } flex items-center justify-center`;
         
-        icon.innerHTML = type === 'win' 
-            ? this.getWinIconSVG() 
-            : this.getGameOverIconSVG();
+        icon.innerHTML = isWin 
+            ? `<svg xmlns="http://www.w3.org/2000/svg" 
+                    class="h-12 w-12 text-green-500" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor">
+                   <path stroke-linecap="round" 
+                         stroke-linejoin="round" 
+                         stroke-width="2" 
+                         d="M5 13l4 4L19 7" />
+               </svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" 
+                    class="h-12 w-12 text-red-500" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor">
+                   <path stroke-linecap="round" 
+                         stroke-linejoin="round" 
+                         stroke-width="2" 
+                         d="M6 18L18 6M6 6l12 12" />
+               </svg>`;
         
         return icon;
-    }
-
-    getWinIconSVG() {
-        return `
-            <svg xmlns="http://www.w3.org/2000/svg" 
-                 class="h-12 w-12 text-green-500" 
-                 fill="none" 
-                 viewBox="0 0 24 24" 
-                 stroke="currentColor">
-                <path stroke-linecap="round" 
-                      stroke-linejoin="round" 
-                      stroke-width="2" 
-                      d="M5 13l4 4L19 7" />
-            </svg>
-        `;
-    }
-
-    getGameOverIconSVG() {
-        return `
-            <svg xmlns="http://www.w3.org/2000/svg" 
-                 class="h-12 w-12 text-red-500" 
-                 fill="none" 
-                 viewBox="0 0 24 24" 
-                 stroke="currentColor">
-                <path stroke-linecap="round" 
-                      stroke-linejoin="round" 
-                      stroke-width="2" 
-                      d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        `;
     }
 
     createModalContent(title, subtitle, stats, buttonConfig) {
         const content = document.createElement('div');
         content.className = 'flex flex-col items-center text-center gap-3';
         
+        // Title
         const titleElement = document.createElement('h3');
         titleElement.className = `font-bold text-3xl ${
             buttonConfig ? 'text-red-600 dark:text-red-500' : ''
         }`;
         titleElement.textContent = title;
         
+        // Subtitle
         const subtitleElement = document.createElement('h4');
         subtitleElement.className = 'font-medium text-xl text-gray-700 dark:text-gray-300';
         subtitleElement.textContent = subtitle;
         
-        const statsElement = this.createStatsElement(stats);
+        // Stats
+        const statsElement = this.createModalStats(stats);
         
+        // Assemble content
         content.appendChild(titleElement);
         content.appendChild(subtitleElement);
         content.appendChild(statsElement);
         
+        // Add action button if needed
         if (buttonConfig) {
-            const button = this.createActionButton(buttonConfig);
+            const button = this.createModalActionButton(buttonConfig);
             content.appendChild(button);
             buttonConfig.button = button;
         }
@@ -586,17 +665,21 @@ class SudokuGame {
         return content;
     }
 
-    createStatsElement(stats) {
+    createModalStats(stats) {
         const statsElement = document.createElement('div');
         statsElement.className = 'flex flex-col gap-2 mt-2';
         
+        // Format current time from timer (not 00:00)
         const minutes = Math.floor(this.timer.seconds / 60).toString().padStart(2, '0');
         const seconds = (this.timer.seconds % 60).toString().padStart(2, '0');
+        const formattedTime = `${minutes}:${seconds}`;
         
+        // Time stats
         const timeStats = document.createElement('p');
         timeStats.className = 'text-lg text-gray-600 dark:text-gray-400';
-        timeStats.innerHTML = `${stats.timeLabel}: <span class="font-semibold">${minutes}:${seconds}</span>`;
+        timeStats.innerHTML = `${stats.timeLabel}: <span class="font-semibold">${formattedTime}</span>`;
         
+        // Mistake stats
         const mistakeStats = document.createElement('p');
         mistakeStats.className = 'text-lg text-gray-600 dark:text-gray-400';
         mistakeStats.innerHTML = `Mistakes: <span class="font-semibold">${this.mistakes}/3</span>`;
@@ -607,7 +690,7 @@ class SudokuGame {
         return statsElement;
     }
 
-    createActionButton(config) {
+    createModalActionButton(config) {
         const button = document.createElement('button');
         button.className = `
             mt-6 px-6 py-3
@@ -615,13 +698,20 @@ class SudokuGame {
             text-white font-semibold rounded-lg
             focus:outline-none focus:ring-2 focus:ring-${config.color}-500 focus:ring-offset-2
             dark:focus:ring-offset-gray-800
+            transition-colors
         `;
         button.textContent = config.text;
         return button;
     }
 
     handleWin() {
-        this.clearAllTimers();
+        // Stop the timer but keep the time value for display
+        if (this.timer.interval) {
+            clearInterval(this.timer.interval);
+            this.timer.interval = null;
+        }
+        
+        this.timer.isRunning = false;
         
         this.createModal({
             type: 'win',
@@ -636,7 +726,13 @@ class SudokuGame {
     handleGameOver() {
         if (document.querySelector('.game-over-modal')) return;
         
-        this.clearAllTimers();
+        // Stop the timer but keep the time value for display
+        if (this.timer.interval) {
+            clearInterval(this.timer.interval);
+            this.timer.interval = null;
+        }
+        
+        this.timer.isRunning = false;
         
         this.createModal({
             type: 'game-over',
@@ -654,8 +750,7 @@ class SudokuGame {
     }
 }
 
-
-
+// Confetti animation class for win celebrations
 class Confetti {
     constructor() {
         this.setupCanvas();
@@ -690,7 +785,6 @@ class Confetti {
         ];
         const shapes = ['circle', 'square', 'triangle', 'line'];
         
-        // Increased number of particles for a fuller effect
         for (let i = 0; i < 200; i++) {
             const color = colors[Math.floor(Math.random() * colors.length)];
             const shape = shapes[Math.floor(Math.random() * shapes.length)];
@@ -702,16 +796,13 @@ class Confetti {
                 size,
                 color,
                 shape,
-                // Reduced initial speed for longer hang time
                 speedX: Math.random() * 4 - 2,
                 speedY: Math.random() * 1.5 + 1,
                 spin: Math.random() * 0.15 - 0.075,
                 angle: Math.random() * 360,
                 wobble: Math.random() * 0.08,
                 wobbleSpeed: Math.random() * 0.08,
-                // Reduced gravity for slower fall
                 gravity: 0.05 + Math.random() * 0.05,
-                // Increased decay resistance (closer to 1 = less decay)
                 decay: 0.995 - Math.random() * 0.01,
                 opacity: 1
             });
@@ -778,7 +869,7 @@ class Confetti {
             particle.angle += particle.spin;
             particle.wobble += particle.wobbleSpeed;
             
-            // Reduced opacity decay for longer visibility
+            // Update opacity
             particle.opacity *= 0.995;
             
             // Remove particles that are out of view or fully faded
